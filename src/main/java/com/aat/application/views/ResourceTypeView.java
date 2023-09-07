@@ -12,6 +12,7 @@ import com.vaadin.componentfactory.tuigrid.model.Item;
 import com.vaadin.componentfactory.tuigrid.model.GuiItem;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -120,7 +121,10 @@ public class ResourceTypeView extends VerticalLayout {
 
         Button addButton = new Button("Add");
         addButton.addClickListener(click -> add());
-        var toolbar = new HorizontalLayout(filterText, addButton);
+        Button removeContactButton = new Button("Delete");
+        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        removeContactButton.addClickListener(click -> delete());
+        var toolbar = new HorizontalLayout(filterText, addButton, removeContactButton);
 
         toolbar.addClassName("toolbar");
 
@@ -135,6 +139,7 @@ public class ResourceTypeView extends VerticalLayout {
         List<Item> items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
+        grid.setRowHeaders(List.of("rowNum", "checkbox"));
 
         grid.addItemChangeListener(event -> {
             GuiItem item = (GuiItem) items.get(event.getRow());
@@ -205,5 +210,15 @@ public class ResourceTypeView extends VerticalLayout {
         service.delete(event.getBean());
         updateList();
         closeEditor();
+    }
+
+    private void delete(){
+        if(grid.getCheckedItems().size() == 0)
+            return;
+        for (int checkedRow :
+                grid.getCheckedItems()) {
+            service.delete(listResourceType.get(checkedRow));
+        }
+        grid.deleteItems(grid.getCheckedItems());
     }
 }

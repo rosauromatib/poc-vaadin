@@ -25,13 +25,13 @@ public class ZJTComponentLine implements ZJTPo {
 	@ManyToOne
 	@JoinColumn(name="parent_id")
 	private ZJTProduct parent;
-	
+
 	@ManyToOne
 	@JoinColumn(name="product_id")
 	private ZJTProduct product;
-	
+
 	@ManyToOne
-	@JoinColumn(name="zjt_element_id")
+	@JoinColumn(name="zjt_element_id", referencedColumnName = "zjt_element_id")
 	private ZJTElement tripelement;
 	
 	@Enumerated(EnumType.STRING)

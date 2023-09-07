@@ -7,6 +7,7 @@ import com.vaadin.componentfactory.tuigrid.TuiGrid;
 import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -33,6 +34,7 @@ public class TripElementView extends VerticalLayout {
     private TripElementForm form;
 
     private final TripElementService service;
+    Span sp = new Span("Here is: ");
 
     public TripElementView(TripElementService service) {
         this.service = service;
@@ -41,7 +43,7 @@ public class TripElementView extends VerticalLayout {
 
         configureGrid();
         configureForm();
-        add(getToolbar(), getContent());
+        add(sp, getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -125,6 +127,7 @@ public class TripElementView extends VerticalLayout {
         List<RelationOption> combPricingTypes = new ArrayList<>();
         for (ZJTPricingType pricingType :
                 pricingTypes) {
+            sp.add(pricingType.getName() + ": ");
             RelationOption option = new RelationOption(pricingType.getName(), String.valueOf(pricingType.getZjt_pricingtype_id()));
             combPricingTypes.add(option);
         }
@@ -153,7 +156,10 @@ public class TripElementView extends VerticalLayout {
 
         Button addButton = new Button("Add");
         addButton.addClickListener(click -> add());
-        var toolbar = new HorizontalLayout(filterText, addButton);
+        Button removeContactButton = new Button("Delete");
+        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        removeContactButton.addClickListener(click -> delete());
+        var toolbar = new HorizontalLayout(filterText, addButton, removeContactButton);
 
         toolbar.addClassName("toolbar");
 
@@ -167,6 +173,7 @@ public class TripElementView extends VerticalLayout {
         List<Item> items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
+        grid.setRowHeaders(List.of("rowNum", "checkbox"));
 
         grid.addItemChangeListener(event -> {
 
@@ -255,5 +262,15 @@ public class TripElementView extends VerticalLayout {
         service.delete(event.getBean());
         updateList();
         closeEditor();
+    }
+
+    private void delete() {
+        if (grid.getCheckedItems().size() == 0)
+            return;
+        for (int checkedRow :
+                grid.getCheckedItems()) {
+            service.delete(elements.get(checkedRow));
+        }
+        grid.deleteItems(grid.getCheckedItems());
     }
 }

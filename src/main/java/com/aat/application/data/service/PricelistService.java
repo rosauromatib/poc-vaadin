@@ -170,10 +170,10 @@ public class PricelistService {
 
     private ZJTPriceListItem getItem(List<ZJTPriceListItem> items, ZJTProduct product, ZJTPricelist pricelist) {
         ZJTPriceListItem item;
-        if(product != null)
+        if (product != null)
             item = items.stream()
-                .filter(i -> i.getPricelist().getZjt_pricelist_id() == pricelist.getZjt_pricelist_id()
-                        && i.getProduct().getZjt_product_id() == product.getZjt_product_id()).findFirst().orElse(null);
+                    .filter(i -> i.getPricelist().getZjt_pricelist_id() == pricelist.getZjt_pricelist_id()
+                            && i.getProduct() != null && i.getProduct().getZjt_product_id() == product.getZjt_product_id()).findFirst().orElse(null);
         else
             item = null;
 

@@ -2,17 +2,9 @@ package com.aat.application.data.entity;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -32,12 +24,18 @@ public class ZJTProduct implements ZJTPo {
 	private String description;
 	
 	@ManyToOne
-	@JoinColumn(name="zjt_resourcetype_id")
+	@JoinColumn(name="zjt_resourcetype_id", referencedColumnName = "zjt_resourcetype_id")
 	private ZJTResourceType resourceType;
 
 	@ManyToOne
-	@JoinColumn(name="zjt_tripelement_id")
+	@JoinColumn(name="zjt_tripelement_id", referencedColumnName = "zjt_element_id")
 	private ZJTElement tripElement;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ZJTPriceListItem> children1;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ZJTComponentLine> children;
 
 	@Enumerated(EnumType.STRING)
 	@NotNull

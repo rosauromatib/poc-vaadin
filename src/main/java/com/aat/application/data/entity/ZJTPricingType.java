@@ -1,11 +1,8 @@
 package com.aat.application.data.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 
 /**
@@ -28,6 +25,9 @@ public class ZJTPricingType implements ZJTPo {
 	
 	@Column
 	private String description;
+
+	@OneToMany(mappedBy = "pricingType", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ZJTElement> children;
 
 	public int getZjt_pricingtype_id() {
 		return zjt_pricingtype_id;

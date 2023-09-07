@@ -1,19 +1,10 @@
 package com.aat.application.data.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Converter;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 
 @Entity
@@ -28,11 +19,17 @@ public class ZJTElement implements ZJTPo {
 	@Column
 	@NotEmpty
 	private String name;
-	
+
 	@ManyToOne
-	@JoinColumn(name="zjt_pricingtype_id")
+	@JoinColumn(name="zjt_pricingtype_id", referencedColumnName = "zjt_pricingtype_id")
 	@NotNull
 	private ZJTPricingType pricingType;
+
+	@OneToMany(mappedBy = "tripElement", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ZJTProduct> children1;
+
+	@OneToMany(mappedBy = "tripelement", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ZJTComponentLine> children2;
 	
 	@Enumerated(EnumType.STRING)
 	@NotNull
@@ -40,7 +37,7 @@ public class ZJTElement implements ZJTPo {
 
 	@Enumerated(EnumType.STRING)
 	private ElementList elementlist;
-	
+
 	public int getZjt_element_id() {
 		return zjt_element_id;
 	}

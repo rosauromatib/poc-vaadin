@@ -1,12 +1,9 @@
 package com.aat.application.data.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+
+import java.util.List;
 
 
 /**
@@ -30,6 +27,8 @@ public class ZJTResourceCategory implements ZJTPo {
 	
 	@Column
 	private String description;
+	@OneToMany(mappedBy = "resourceCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ZJTResourceType> children;
 
 	public String getName() {
 		return name;

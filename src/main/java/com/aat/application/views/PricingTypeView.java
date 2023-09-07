@@ -11,6 +11,7 @@ import com.vaadin.componentfactory.tuigrid.model.Item;
 import com.vaadin.componentfactory.tuigrid.model.GuiItem;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -37,6 +38,7 @@ public class PricingTypeView extends VerticalLayout {
     private PricingTypeForm form;
 
     private final PricingTypeService service;
+    Span sp = new Span("Here is.");
 
     public PricingTypeView(PricingTypeService service) {
         this.service = service;
@@ -47,7 +49,7 @@ public class PricingTypeView extends VerticalLayout {
         configureForm();
         getContent();
 
-        add(getToolbar(), getContent());
+        add(sp, getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -116,7 +118,8 @@ public class PricingTypeView extends VerticalLayout {
         Button addContactButton = new Button("Add");
         addContactButton.addClickListener(click -> add());
         Button removeContactButton = new Button("Delete");
-        removeContactButton.addClickListener(click -> add());
+        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        removeContactButton.addClickListener(click -> delete());
         var toolbar = new HorizontalLayout(filterText, addContactButton, removeContactButton);
 
         toolbar.addClassName("toolbar");
@@ -125,9 +128,8 @@ public class PricingTypeView extends VerticalLayout {
     }
 
     private void configureGrid() {
-//        grid.addClassName("scheduler-grid");
         grid = new TuiGrid();
-
+        grid.addClassName("scheduler-grid");
         List<Item> items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
@@ -153,11 +155,6 @@ public class PricingTypeView extends VerticalLayout {
         });
 
         grid.setSizeFull();
-//		grid.setColumns("name", "description");
-//		grid.addColumn(product -> product.getName()).setHeader("Product Name");
-//		grid.getColumnByKey("zjt_pricingtype_id").setVisible(false);
-//		grid.getColumns().forEach(col -> col.setAutoWidth(true));
-//		grid.asSingleSelect().addValueChangeListener(event -> edit(event.getValue()));
         grid.setHeaderHeight(50);
         grid.setTableWidth(750);
         grid.setTableHeight(750);
@@ -209,5 +206,18 @@ public class PricingTypeView extends VerticalLayout {
         service.delete(event.getBean());
         updateList();
         closeEditor();
+    }
+
+    private void delete(){
+        if(grid.getCheckedItems().size() == 0)
+            return;
+        for (int checkedRow :
+                grid.getCheckedItems()) {
+            sp.add(String.valueOf(listPricingType.get(checkedRow).getZjt_pricingtype_id()));
+            sp.add(": " + listPricingType.get(checkedRow).getName());
+            service.delete(listPricingType.get(checkedRow));
+        }
+        sp.add(grid.getCheckedItems().toString());
+        grid.deleteItems(grid.getCheckedItems());
     }
 }
