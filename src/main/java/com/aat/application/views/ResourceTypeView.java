@@ -1,5 +1,7 @@
 package com.aat.application.views;
 
+import com.aat.application.data.entity.PriceListRow;
+import com.aat.application.data.entity.ZJTResourceCategory;
 import com.aat.application.data.entity.ZJTResourceType;
 import com.aat.application.data.service.ResourceTypeService;
 import com.aat.application.form.ResourceTypeForm;
@@ -7,7 +9,7 @@ import com.vaadin.componentfactory.tuigrid.TuiGrid;
 import com.vaadin.componentfactory.tuigrid.model.Column;
 import com.vaadin.componentfactory.tuigrid.model.ColumnBaseOption;
 import com.vaadin.componentfactory.tuigrid.model.Item;
-import com.vaadin.componentfactory.tuigrid.model.RelationItem;
+import com.vaadin.componentfactory.tuigrid.model.GuiItem;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -17,7 +19,10 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @PageTitle("Resource Type")
@@ -27,16 +32,15 @@ public class ResourceTypeView extends VerticalLayout {
 
     //	private Grid<ZJTResourceType> grid = new Grid<>(ZJTResourceType.class);
     TuiGrid grid;
+    List<ZJTResourceType> listResourceType;
     TextField filterText = new TextField();
 
     private ResourceTypeForm form;
 
-    private ResourceTypeService service;
+    private final ResourceTypeService service;
 
     public ResourceTypeView(ResourceTypeService service) {
         this.service = service;
-        grid = new TuiGrid(null, this.getTableData(),
-                this.getColumns(), null);
 
         setSizeFull();
 
@@ -51,37 +55,51 @@ public class ResourceTypeView extends VerticalLayout {
     private List<Item> getTableData() {
 
         List<Item> TableData = new ArrayList<>();
-        List<ZJTResourceType> listPricingType;
         if (filterText != null)
-            listPricingType = service.findAllResourceTypes(filterText.getValue());
+            listResourceType = service.findAllResourceTypes(filterText.getValue());
         else
-            listPricingType = service.findAllResourceTypes(null);
+            listResourceType = service.findAllResourceTypes(null);
+
+        Comparator<ZJTResourceType> comparator = Comparator.comparing(item -> item.getName());
+        Collections.sort(listResourceType, comparator);
+        
         List<String> headers = List.of("Name", "Description");
         try {
             for (ZJTResourceType zjtResourceType :
-                    listPricingType) {
+                    listResourceType) {
 
-                TableData.add(new RelationItem(
+                TableData.add(new GuiItem(
                         List.of(zjtResourceType.getName(),
                                 zjtResourceType.getDescription() != null ? zjtResourceType.getDescription() : ""),
                         headers));
 
             }
         } catch (Exception e) {
-            TableData.add(new RelationItem(
+            TableData.add(new GuiItem(
                     List.of(e.toString(),
-                            String.valueOf(listPricingType.size())),
+                            String.valueOf(listResourceType.size())),
                     headers));
         }
-
 
         return TableData;
     }
 
     private List<Column> getColumns() {
-        List<Column> columns = List.of(
-                new Column(new ColumnBaseOption(1, "Name", "Name", 250, "center", "")),
-                new Column(new ColumnBaseOption(2, "Description", "Description", 250, "center", "")));
+        Column nameCol = new Column(new ColumnBaseOption(0, "Name", "Name", 250, "center", ""));
+        nameCol.setEditable(true);
+        nameCol.setMaxLength(10);
+        nameCol.setType("input");
+        nameCol.setSortable(true);
+        nameCol.setSortingType("asc");
+
+        Column desCol = new Column(new ColumnBaseOption(0, "Description", "Description", 250, "center", ""));
+        desCol.setEditable(true);
+        desCol.setMaxLength(10);
+        desCol.setType("input");
+        desCol.setSortable(true);
+        desCol.setSortingType("asc");
+
+        List<Column> columns = List.of(nameCol, desCol);
         return columns;
     }
 
@@ -111,16 +129,30 @@ public class ResourceTypeView extends VerticalLayout {
 
 
     private void configureGrid() {
+        grid = new TuiGrid();
         grid.addClassName("scheduler-grid");
 
+        List<Item> items = this.getTableData();
+        grid.setItems(items);
+        grid.setColumns(this.getColumns());
+
+        grid.addItemChangeListener(event -> {
+            GuiItem item = (GuiItem) items.get(event.getRow());
+            String colName = event.getColName();
+            int index = item.getHeaders().indexOf(colName);
+            ZJTResourceType row = listResourceType.get(event.getRow());
+            switch (index) {
+                case 0:
+                    row.setName(event.getColValue());
+                    break;
+                case 1:
+                    row.setDescription(event.getColValue());
+                    break;
+            }
+            service.save(row);
+        });
         grid.setSizeFull();
-//		grid.setColumns("name", "description");
-//		//TODO - this is causing some error
-//		grid.addColumn(resourceCategory -> resourceCategory.getResourceCategory().getName()).setHeader("Resource Category");
-////		grid.addColumn(resourceCategory -> resourceCategory.getCname()).setHeader("Res Category");
-//		grid.getColumns().forEach(col -> col.setAutoWidth(true));
-//		grid.asSingleSelect().addValueChangeListener(event -> edit(event.getValue()));
-        grid.setHeaderHeight(100);
+        grid.setHeaderHeight(50);
         grid.setTableWidth(500);
         grid.setTableHeight(750);
     }
@@ -136,6 +168,8 @@ public class ResourceTypeView extends VerticalLayout {
 
     private void updateList() {
 //		grid.setItems(service.findAllResourceTypes(filterText.getValue()));
+        grid.setItems(this.getTableData());
+        add(getContent());
     }
 
     public void edit(ZJTResourceType po) {

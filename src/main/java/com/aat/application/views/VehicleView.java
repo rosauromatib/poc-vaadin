@@ -18,19 +18,19 @@ import com.vaadin.flow.router.Route;
 
 public class VehicleView  extends VerticalLayout{
 
-	private Grid<ZJTVehicle> grid = new Grid<>(ZJTVehicle.class);
+	private final Grid<ZJTVehicle> grid = new Grid<>(ZJTVehicle.class);
 	TextField filterText = new TextField();
-	
+
 	private VehicleForm form;
-	
-	private VehicleService service;
-	
+
+	private final VehicleService service;
+
 	public VehicleView(VehicleService service) {
 		this.service = service;
-		
-		
+
+
 		setSizeFull();
-		
+
 		configureGrid();
 		configureForm();
 		getContent();
@@ -39,40 +39,40 @@ public class VehicleView  extends VerticalLayout{
 		closeEditor();
 	}
 
-	
+
 	private Component getContent() {
 		HorizontalLayout content = new HorizontalLayout(grid, form);
 		content.setFlexGrow(2,  grid);
 		content.setFlexGrow(1, form);
-        content.addClassNames("content");
-        content.setSizeFull();
-        return content;
+		content.addClassNames("content");
+		content.setSizeFull();
+		return content;
 	}
 
-    private HorizontalLayout getToolbar() {
-        filterText.setPlaceholder("Filter by name...");
-        filterText.setClearButtonVisible(true);
-        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(e -> updateList());
+	private HorizontalLayout getToolbar() {
+		filterText.setPlaceholder("Filter by name...");
+		filterText.setClearButtonVisible(true);
+		filterText.setValueChangeMode(ValueChangeMode.LAZY);
+		filterText.addValueChangeListener(e -> updateList());
 
-        Button addButton = new Button("Add");
-        addButton.addClickListener(click -> add());
-        var toolbar = new HorizontalLayout(filterText, addButton); 
+		Button addButton = new Button("Add");
+		addButton.addClickListener(click -> add());
+		var toolbar = new HorizontalLayout(filterText, addButton);
 
-        toolbar.addClassName("toolbar"); 
+		toolbar.addClassName("toolbar");
 
-        return toolbar;
-    }
+		return toolbar;
+	}
 
 	private void configureGrid() {
 		grid.addClassName("scheduler-grid");
-		
+
 		grid.setSizeFull();
 		grid.setColumns("vehicleid", "fleetid", "makemodel", "description");
 		grid.getColumns().forEach(col -> col.setAutoWidth(true));
 		grid.asSingleSelect().addValueChangeListener(event -> edit(event.getValue()));
 	}
-	
+
 	private void configureForm()
 	{
 		form = new VehicleForm();
@@ -85,9 +85,9 @@ public class VehicleView  extends VerticalLayout{
 
 	private void updateList() {
 		grid.setItems(service.findAllVehicles(filterText.getValue()));
-		
+
 	}
-	
+
 	public void edit(ZJTVehicle po)
 	{
 		if (po == null) {
@@ -98,7 +98,7 @@ public class VehicleView  extends VerticalLayout{
 			addClassName("editing");
 		}
 	}
-	
+
 	private void add()
 	{
 		grid.asSingleSelect().clear();
@@ -111,7 +111,7 @@ public class VehicleView  extends VerticalLayout{
 		form.setBean(null);
 		form.setVisible(false);
 		removeClassName("editing");
-		
+
 	}
 
 	private void save(VehicleForm.SaveEvent event)
@@ -120,7 +120,7 @@ public class VehicleView  extends VerticalLayout{
 		updateList();
 		closeEditor();
 	}
-	
+
 	private void delete(VehicleForm.DeleteEvent event)
 	{
 		service.delete(event.getBean());

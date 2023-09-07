@@ -5,7 +5,7 @@ import java.util.List;
 import com.vaadin.componentfactory.tuigrid.model.ComplexColumn;
 import com.vaadin.componentfactory.tuigrid.model.DateOption;
 import com.vaadin.componentfactory.tuigrid.model.Item;
-import com.vaadin.componentfactory.tuigrid.model.MusicItem;
+import com.vaadin.componentfactory.tuigrid.model.GuiItem;
 import com.vaadin.componentfactory.tuigrid.model.Summary;
 import com.vaadin.componentfactory.tuigrid.model.ColumnBaseOption;
 import com.vaadin.componentfactory.tuigrid.TuiGrid;
@@ -17,39 +17,38 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @PageTitle("Demo ToastUI Grid")
-@Route(value="tui-grid", layout = MainLayout.class)
+@Route(value = "tui-grid", layout = MainLayout.class)
 
-public class UIToastGridView extends VerticalLayout{
+public class UIToastGridView extends VerticalLayout {
 
-	TextArea description  = new TextArea("Description");
-	
-	public UIToastGridView()
-	{
-		description.setWidthFull();
-		description.setHeight("15em");
-		
+    TextArea description = new TextArea("Description");
+
+    public UIToastGridView() {
+        description.setWidthFull();
+        description.setHeight("15em");
+
         Button testButton = new Button("Test JS");
         testButton.addClickListener(click -> addGrid());
         testButton.setWidth("10em");
 //        ToastUIGrid grid = new ToastUIGrid();
         TuiGrid grid = new TuiGrid(this.getCustomHeader(), this.getTableData(),
-                this.getColumns(), this.getSummaries()); 
+                this.getColumns(), this.getSummaries());
         grid.setHeaderHeight(100);
         grid.setSummaryHeight(40);
-		add(testButton, description, grid);
-	}
-	
+        add(testButton, description, grid);
+    }
 
-	private void addGrid()
-	{
-		
-	}
-	
+
+    private void addGrid() {
+
+    }
+
     private List<Item> getTableData() {
+        List<String> headers = List.of("name", "artist", "type", "genre", "release", "price", "download", "listen");
 
         List<Item> TableData = List.of(
-                new MusicItem("Beautiful Lies", "Birdy", "Deluxe;", "Pop", "2016-03-26", "10000", "1000", "10050"),
-                new MusicItem(
+                new GuiItem(List.of("Beautiful Lies", "Birdy", "Deluxe;", "Pop", "2016-03-26", "10000", "1000", "10050"), headers),
+                new GuiItem(List.of(
                         "X",
                         "Ed Sheeran",
                         "Deluxe;",
@@ -57,8 +56,8 @@ public class UIToastGridView extends VerticalLayout{
                         "",
                         "20000",
                         "1900",
-                        "2005"),
-                new MusicItem(
+                        "2005"), headers),
+                new GuiItem(List.of(
                         "Moves Like Jagger",
                         "Maroon5",
                         "Single;",
@@ -67,8 +66,8 @@ public class UIToastGridView extends VerticalLayout{
                         "7000",
                         "11000",
                         "3100"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "A Head Full Of Dreams",
                         "Coldplay",
                         "Deluxe;",
@@ -77,8 +76,8 @@ public class UIToastGridView extends VerticalLayout{
                         "25000",
                         "2230",
                         "4030"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "21",
                         "Adele",
                         "Deluxe;",
@@ -87,8 +86,8 @@ public class UIToastGridView extends VerticalLayout{
                         "15000",
                         "1007",
                         "12000"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Warm On A Cold Night",
                         "HONNE",
                         "EP;",
@@ -97,8 +96,8 @@ public class UIToastGridView extends VerticalLayout{
                         "11000",
                         "1502",
                         "5000"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Take Me To The Alley",
                         "Gregory Porter",
                         "Deluxe;",
@@ -107,8 +106,8 @@ public class UIToastGridView extends VerticalLayout{
                         "30000",
                         "1200",
                         "5003"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Make Out",
                         "LANY",
                         "EP;",
@@ -117,8 +116,8 @@ public class UIToastGridView extends VerticalLayout{
                         "12000",
                         "8005",
                         "9000"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Get Lucky",
                         "Daft Punk",
                         "Single",
@@ -127,8 +126,8 @@ public class UIToastGridView extends VerticalLayout{
                         "9000",
                         "11000",
                         "1500"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Valtari",
                         "Sigur Rós",
                         "EP;",
@@ -137,8 +136,8 @@ public class UIToastGridView extends VerticalLayout{
                         "10000",
                         "9000",
                         "8010"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Bush",
                         "Snoop Dogg",
                         "EP",
@@ -147,8 +146,8 @@ public class UIToastGridView extends VerticalLayout{
                         "18000",
                         "3000",
                         "2005"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Chaos And The Calm",
                         "James Bay",
                         "EP",
@@ -157,8 +156,8 @@ public class UIToastGridView extends VerticalLayout{
                         "12000",
                         "8007",
                         "9000"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "4",
                         "Beyoncé",
                         "Deluxe",
@@ -167,8 +166,8 @@ public class UIToastGridView extends VerticalLayout{
                         "12000",
                         "7000",
                         "11002"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "I Won't Give Up",
                         "Jason Mraz",
                         "Single",
@@ -177,8 +176,8 @@ public class UIToastGridView extends VerticalLayout{
                         "7000",
                         "8000",
                         "2000"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Following My Intuition",
                         "Craig David",
                         "Deluxe",
@@ -187,8 +186,8 @@ public class UIToastGridView extends VerticalLayout{
                         "15000",
                         "9001",
                         "8100"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Blue Skies",
                         "Lenka",
                         "Single",
@@ -197,8 +196,8 @@ public class UIToastGridView extends VerticalLayout{
                         "6000",
                         "11000",
                         "9000"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "This Is Acting",
                         "Sia",
                         "EP",
@@ -207,8 +206,8 @@ public class UIToastGridView extends VerticalLayout{
                         "20000",
                         "11400",
                         "5800"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "Blurryface",
                         "Twenty One Pilots",
                         "EP",
@@ -217,8 +216,8 @@ public class UIToastGridView extends VerticalLayout{
                         "13000",
                         "6010",
                         "3020"
-                ),
-                new MusicItem(
+                ), headers),
+                new GuiItem(List.of(
                         "I am Not The Only One",
                         "Sam Smith",
                         "Single",
@@ -227,7 +226,7 @@ public class UIToastGridView extends VerticalLayout{
                         "",
                         "",
                         ""
-                ));
+                ), headers));
 
         return TableData;
     }

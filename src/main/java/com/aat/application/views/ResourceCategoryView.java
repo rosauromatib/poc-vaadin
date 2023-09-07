@@ -1,13 +1,14 @@
 package com.aat.application.views;
 
 import com.aat.application.data.entity.ZJTResourceCategory;
+import com.aat.application.data.entity.ZJTResourceType;
 import com.aat.application.data.service.ResourceCategoryService;
 import com.aat.application.form.ResourceCategoryForm;
 import com.vaadin.componentfactory.tuigrid.TuiGrid;
 import com.vaadin.componentfactory.tuigrid.model.Column;
 import com.vaadin.componentfactory.tuigrid.model.ColumnBaseOption;
 import com.vaadin.componentfactory.tuigrid.model.Item;
-import com.vaadin.componentfactory.tuigrid.model.RelationItem;
+import com.vaadin.componentfactory.tuigrid.model.GuiItem;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -18,149 +19,186 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @PageTitle("Resource Category")
 @Route(value = "resourcecategory", layout = MainLayout.class)
 public class ResourceCategoryView extends VerticalLayout {
 
-    //	private Grid<ZJTResourceCategory> grid = new Grid<>(ZJTResourceCategory.class);
-    TuiGrid grid;
-    TextField filterText = new TextField();
+	//	private Grid<ZJTResourceCategory> grid = new Grid<>(ZJTResourceCategory.class);
+	TuiGrid grid;
+	List<ZJTResourceCategory> listResourceCategory;
+	TextField filterText = new TextField();
 
-    private ResourceCategoryForm form;
+	private ResourceCategoryForm form;
 
-    private ResourceCategoryService service;
+	private final ResourceCategoryService service;
 
-    public ResourceCategoryView(ResourceCategoryService service) {
-        this.service = service;
-        grid = new TuiGrid(null, this.getTableData(),
-                this.getColumns(), null);
+	public ResourceCategoryView(ResourceCategoryService service) {
+		this.service = service;
 
-        setSizeFull();
+		setSizeFull();
 
-        configureGrid();
-        configureForm();
-        getContent();
-        add(getToolbar(), getContent());
-        updateList();
-        closeEditor();
+		configureGrid();
+		configureForm();
+		getContent();
+		add(getToolbar(), getContent());
+		updateList();
+		closeEditor();
 
-    }
+	}
 
-    private List<Item> getTableData() {
+	private List<Item> getTableData() {
 
-        List<Item> TableData = new ArrayList<>();
-        List<ZJTResourceCategory> listPricingType;
-        if (filterText != null)
-            listPricingType = service.findAll(filterText.getValue());
-        else
-            listPricingType = service.findAll(null);
-        List<String> headers = List.of("Name", "Description");
-        for (ZJTResourceCategory zjtResourceCategory :
-                listPricingType) {
-            TableData.add(new RelationItem(
-                    List.of(zjtResourceCategory.getName(),
-                            zjtResourceCategory.getDescription()),
-                    headers));
+		List<Item> TableData = new ArrayList<>();
 
-        }
+		if (filterText != null)
+			listResourceCategory = service.findAll(filterText.getValue());
+		else
+			listResourceCategory = service.findAll(null);
 
-        return TableData;
-    }
+		Comparator<ZJTResourceCategory> comparator = Comparator.comparing(item -> item.getName());
+		Collections.sort(listResourceCategory, comparator);
 
-    private List<Column> getColumns() {
-        List<Column> columns = List.of(
-                new Column(new ColumnBaseOption(1, "Name", "Name", 250, "center", "")),
-                new Column(new ColumnBaseOption(2, "Description", "Description", 250, "center", "")));
-        return columns;
-    }
+		List<String> headers = List.of("Name", "Description");
+		for (ZJTResourceCategory zjtResourceCategory :
+				listResourceCategory) {
+			TableData.add(new GuiItem(
+					List.of(zjtResourceCategory.getName(),
+							zjtResourceCategory.getDescription()),
+					headers));
 
+		}
 
-    private Component getContent() {
-        HorizontalLayout content = new HorizontalLayout(grid, form);
-        content.setFlexGrow(2, grid);
-        content.setFlexGrow(1, form);
-        content.addClassNames("content");
-        content.setSizeFull();
-        return content;
-    }
+		return TableData;
+	}
 
-    private HorizontalLayout getToolbar() {
-        filterText.setPlaceholder("Filter by name...");
-        filterText.setClearButtonVisible(true);
-        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(e -> updateList());
+	private List<Column> getColumns() {
 
-        Button addContactButton = new Button("Add");
-        addContactButton.addClickListener(click -> add());
-        var toolbar = new HorizontalLayout(filterText, addContactButton);
+		Column nameCol = new Column(new ColumnBaseOption(0, "Name", "Name", 250, "center", ""));
+		nameCol.setEditable(true);
+		nameCol.setMaxLength(10);
+		nameCol.setType("input");
+		nameCol.setSortable(true);
+		nameCol.setSortingType("asc");
 
-        toolbar.addClassName("toolbar");
+		Column desCol = new Column(new ColumnBaseOption(0, "Description", "Description", 250, "center", ""));
+		desCol.setEditable(true);
+		desCol.setMaxLength(10);
+		desCol.setType("input");
+		desCol.setSortable(true);
+		desCol.setSortingType("asc");
 
-        return toolbar;
-    }
+		List<Column> columns = List.of(nameCol, desCol);
+		return columns;
+	}
 
 
-    private void configureGrid() {
-        grid.addClassName("scheduler-grid");
+	private Component getContent() {
+		HorizontalLayout content = new HorizontalLayout(grid, form);
+		content.setFlexGrow(2, grid);
+		content.setFlexGrow(1, form);
+		content.addClassNames("content");
+		content.setSizeFull();
+		return content;
+	}
 
-        grid.setSizeFull();
-//        grid.setColumns("name", "description");
-////		grid.addColumn(product -> product.getName()).setHeader("Product Name");
-////		grid.getColumnByKey("zjt_pricingtype_id").setVisible(false);
-//        grid.getColumns().forEach(col -> col.setAutoWidth(true));
-//        grid.asSingleSelect().addValueChangeListener(event -> edit(event.getValue()));
-        grid.setHeaderHeight(100);
-        grid.setTableWidth(500);
-        grid.setTableHeight(750);
-    }
+	private HorizontalLayout getToolbar() {
+		filterText.setPlaceholder("Filter by name...");
+		filterText.setClearButtonVisible(true);
+		filterText.setValueChangeMode(ValueChangeMode.LAZY);
+		filterText.addValueChangeListener(e -> updateList());
 
-    private void configureForm() {
-        form = new ResourceCategoryForm();
-        form.setWidth("25em");
+		Button addContactButton = new Button("Add");
+		addContactButton.addClickListener(click -> add());
+		var toolbar = new HorizontalLayout(filterText, addContactButton);
 
-        form.addSaveListener(this::save);
-        form.addDeleteListener(this::delete);
-        form.addCloseListener(e -> closeEditor());
-    }
+		toolbar.addClassName("toolbar");
 
-    private void updateList() {
+		return toolbar;
+	}
+
+
+	private void configureGrid() {
+
+		grid = new TuiGrid();
+		grid.addClassName("scheduler-grid");
+
+		List<Item> items = this.getTableData();
+		grid.setItems(items);
+		grid.setColumns(this.getColumns());
+
+		grid.addItemChangeListener(event -> {
+			GuiItem item = (GuiItem) items.get(event.getRow());
+			String colName = event.getColName();
+			int index = item.getHeaders().indexOf(colName);
+			ZJTResourceCategory row = listResourceCategory.get(event.getRow());
+			switch (index) {
+				case 0:
+					row.setName(event.getColValue());
+					break;
+				case 1:
+					row.setDescription(event.getColValue());
+					break;
+			}
+			service.save(row);
+		});
+
+		grid.setSizeFull();
+		grid.setHeaderHeight(50);
+		grid.setTableWidth(500);
+		grid.setTableHeight(750);
+	}
+
+	private void configureForm() {
+		form = new ResourceCategoryForm();
+		form.setWidth("25em");
+
+		form.addSaveListener(this::save);
+		form.addDeleteListener(this::delete);
+		form.addCloseListener(e -> closeEditor());
+	}
+
+	private void updateList() {
 //        grid.setItems(service.findAll(filterText.getValue()));
-    }
+		grid.setItems(this.getTableData());
+		add(getContent());
+	}
 
-    public void edit(ZJTResourceCategory po) {
-        if (po == null) {
-            closeEditor();
-        } else {
-            form.setBean(po);
-            form.setVisible(true);
-            addClassName("editing");
-        }
-    }
+	public void edit(ZJTResourceCategory po) {
+		if (po == null) {
+			closeEditor();
+		} else {
+			form.setBean(po);
+			form.setVisible(true);
+			addClassName("editing");
+		}
+	}
 
-    private void add() {
+	private void add() {
 //        grid.asSingleSelect().clear();
-        edit(new ZJTResourceCategory());
-    }
+		edit(new ZJTResourceCategory());
+	}
 
 
-    private void closeEditor() {
-        form.setBean(null);
-        form.setVisible(false);
-        removeClassName("editing");
+	private void closeEditor() {
+		form.setBean(null);
+		form.setVisible(false);
+		removeClassName("editing");
 
-    }
+	}
 
-    private void save(ResourceCategoryForm.SaveEvent event) {
-        service.save(event.getBean());
-        updateList();
-        closeEditor();
-    }
+	private void save(ResourceCategoryForm.SaveEvent event) {
+		service.save(event.getBean());
+		updateList();
+		closeEditor();
+	}
 
-    private void delete(ResourceCategoryForm.DeleteEvent event) {
-        service.delete(event.getBean());
-        updateList();
-        closeEditor();
-    }
+	private void delete(ResourceCategoryForm.DeleteEvent event) {
+		service.delete(event.getBean());
+		updateList();
+		closeEditor();
+	}
 }

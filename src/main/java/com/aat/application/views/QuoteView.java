@@ -1,6 +1,9 @@
 package com.aat.application.views;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.json.Json;
@@ -12,6 +15,11 @@ import com.aat.application.data.entity.ZJTPricelist;
 import com.aat.application.data.entity.ZJTProduct;
 import com.aat.application.data.service.PricelistService;
 import com.aat.application.data.service.QuoteService;
+import com.vaadin.componentfactory.tuigrid.TuiGrid;
+import com.vaadin.componentfactory.tuigrid.model.Column;
+import com.vaadin.componentfactory.tuigrid.model.ColumnBaseOption;
+import com.vaadin.componentfactory.tuigrid.model.GuiItem;
+import com.vaadin.componentfactory.tuigrid.model.Item;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.button.Button;
@@ -31,67 +39,146 @@ import com.vaadin.flow.router.Route;
 
 
 @PageTitle("Quoting")
-@Route(value="quote", layout = MainLayout.class)
+@Route(value = "quote", layout = MainLayout.class)
 
-public class QuoteView extends VerticalLayout{
+public class QuoteView extends VerticalLayout {
 
-	private QuoteService service;
-	
-	TextField priceListText = new TextField();
-	ComboBox<ZJTPricelist> pricelistCombo = new ComboBox<>("Price List");
-	ComboBox<ZJTProduct> itiCombo = new ComboBox<>("Itineraries");
+    private final QuoteService service;
 
-	private Grid<PriceListRow> grid = new Grid<>(PriceListRow.class, false);
-	private BeanValidationBinder<PriceListRow> binder = new BeanValidationBinder<>(PriceListRow.class);
-	
-	private List<ZJTPricelist> m_pricelists;
-	private List<ZJTProduct> m_itineraries;
+    TextField priceListText = new TextField();
+    ComboBox<ZJTPricelist> pricelistCombo = new ComboBox<>("Price List");
+    ComboBox<ZJTProduct> itiCombo = new ComboBox<>("Itineraries");
 
-	public QuoteView(QuoteService service)
-	{
-		this.service = service;
-		setSizeFull();
-		
-		configureGrid();
-		
+    //    private Grid<PriceListRow> grid = new Grid<>(PriceListRow.class, false);
+    private final BeanValidationBinder<PriceListRow> binder = new BeanValidationBinder<>(PriceListRow.class);
+    TuiGrid grid;
+    List<PriceListRow> listPricingType;
+
+
+    private List<ZJTPricelist> m_pricelists;
+    private List<ZJTProduct> m_itineraries;
+
+    public QuoteView(QuoteService service) {
+        this.service = service;
+
+        setSizeFull();
+
+        configureGrid();
+
 //		grid = configureGrid();
-		add(getHeaderPanel(), grid);
-		
-		loadInit();
-	}
-	
-	private void configureGrid()
-	{
-		grid.addClassName("scheduler-grid");
-		grid.setSizeFull();
-		Editor<PriceListRow> editor = grid.getEditor();
-		editor.setBinder(binder);
-		editor.setBuffered(false);
-		
-		grid.setColumns("name", "vehicleHours", "vehicleKM", "driverHours", "overHead", "profitMargin");
-		grid.getColumnByKey("vehicleHours").setTextAlign(ColumnTextAlign.END);
-		grid.getColumnByKey("vehicleKM").setTextAlign(ColumnTextAlign.END);
-		grid.getColumnByKey("driverHours").setTextAlign(ColumnTextAlign.END);
-		grid.getColumnByKey("overHead").setTextAlign(ColumnTextAlign.END);
-		grid.getColumnByKey("profitMargin").setTextAlign(ColumnTextAlign.END);
-		
-		NumberField vhField = new NumberField();
-		vhField.setWidthFull();
+        add(getHeaderPanel(), grid);
+
+        loadInit();
+    }
+
+    private List<Item> getTableData() {
+
+        List<Item> TableData = new ArrayList<>();
+        try {
+            listPricingType = service.getTabulatedItems(pricelistCombo.getValue());
+
+            Comparator<PriceListRow> comparator = Comparator.comparing(item -> item.getName());
+            Collections.sort(listPricingType, comparator);
+
+            List<String> headers = List.of("name", "vehicle_hours", "vehicle_km", "driver_hours", "over_head", "profit_margin");
+            for (PriceListRow priceListRow :
+                    listPricingType) {
+                TableData.add(new GuiItem(List.of(priceListRow.getName(),
+                        String.valueOf(priceListRow.getVehicleHours()),
+                        String.valueOf(priceListRow.getVehicleKM()),
+                        String.valueOf(priceListRow.getDriverHours()),
+                        String.valueOf(priceListRow.getOverHead()),
+                        String.valueOf(priceListRow.getProfitMargin())),
+                        headers));
+
+            }
+        } catch (Exception e) {
+            TableData = null;
+        }
+        return TableData;
+    }
+
+    private List<Column> getColumns() {
+        Column nameCol = new Column(new ColumnBaseOption(0, "Name", "name", 150, "center", ""));
+        nameCol.setEditable(true);
+        nameCol.setMaxLength(10);
+        nameCol.setType("input");
+        nameCol.setSortable(true);
+        nameCol.setSortingType("asc");
+
+        Column vhCol = new Column(new ColumnBaseOption(1, "Vehicle Hours", "vehicle_hours", 0, "center", ""));
+        vhCol.setEditable(true);
+        vhCol.setMaxLength(10);
+        vhCol.setType("input");
+        vhCol.setSortable(true);
+        vhCol.setSortingType("asc");
+
+        Column vkCol = new Column(new ColumnBaseOption(2, "Vehicle KM", "vehicle_km", 0, "center", ""));
+        vkCol.setEditable(true);
+        vkCol.setMaxLength(10);
+        vkCol.setType("input");
+        vkCol.setSortable(true);
+        vkCol.setSortingType("asc");
+
+        Column dhCol = new Column(new ColumnBaseOption(3, "Driver Hours", "driver_hours", 0, "center", ""));
+        dhCol.setEditable(true);
+        dhCol.setMaxLength(10);
+        dhCol.setType("input");
+        dhCol.setSortable(true);
+        dhCol.setSortingType("asc");
+
+        Column ohCol = new Column(new ColumnBaseOption(4, "Over Head", "over_head", 0, "center", ""));
+        ohCol.setEditable(true);
+        ohCol.setMaxLength(10);
+        ohCol.setType("input");
+        ohCol.setSortable(true);
+        ohCol.setSortingType("asc");
+
+        Column pmCol = new Column(new ColumnBaseOption(5, "Profit Margin", "profit_margin", 0, "center", ""));
+        pmCol.setEditable(true);
+        pmCol.setMaxLength(10);
+        pmCol.setType("input");
+        pmCol.setSortable(true);
+        pmCol.setSortingType("asc");
+
+        List<Column> columns = List.of(nameCol, vhCol, vkCol, dhCol, ohCol, pmCol);
+        return columns;
+    }
+
+
+    private void configureGrid() {
+        grid = new TuiGrid();
+        grid.setItems(this.getTableData());
+        grid.setColumns(this.getColumns());
+        grid.addClassName("scheduler-grid");
+        grid.setSizeFull();
+//        Editor<PriceListRow> editor = grid.getEditor();
+//        editor.setBinder(binder);
+//        editor.setBuffered(false);
+
+//        grid.setColumns("name", "vehicleHours", "vehicleKM", "driverHours", "overHead", "profitMargin");
+//        grid.getColumnByKey("vehicleHours").setTextAlign(ColumnTextAlign.END);
+//        grid.getColumnByKey("vehicleKM").setTextAlign(ColumnTextAlign.END);
+//        grid.getColumnByKey("driverHours").setTextAlign(ColumnTextAlign.END);
+//        grid.getColumnByKey("overHead").setTextAlign(ColumnTextAlign.END);
+//        grid.getColumnByKey("profitMargin").setTextAlign(ColumnTextAlign.END);
+
+        NumberField vhField = new NumberField();
+        vhField.setWidthFull();
 //		binder.forField(vhField)
 //			.withConverter(null)
 //			.bind(PriceListRow::getVehicleHours, PriceListRow::setVehicleHours);
-		
-		
-		
-		grid.addItemDoubleClickListener(e -> {
-			editor.editItem(e.getItem());
-		    Component editorComponent = e.getColumn().getEditorComponent();
-		    if (editorComponent instanceof Focusable) {
-		        ((Focusable) editorComponent).focus();
-		    }
-		});
-	}
-	
+
+
+//        grid.addItemDoubleClickListener(e -> {
+//            editor.editItem(e.getItem());
+//            Component editorComponent = e.getColumn().getEditorComponent();
+//            if (editorComponent instanceof Focusable) {
+//                ((Focusable) editorComponent).focus();
+//            }
+//        });
+    }
+
 //	private Grid<List<Object>> configureGrid() {
 //		final Grid<List<Object>> grid = new Grid<>();
 //
@@ -99,22 +186,21 @@ public class QuoteView extends VerticalLayout{
 //		Binder<List<Object>> binder = new Binder<>();
 //		grid.getEditor().setBinder(binder);
 //		grid.getEditor().setBuffered(false);
-//		 
+//
 //		TextField textField = new TextField();
 //		binder.forField(textField).wit
 //			//.bind(list -> list.g
-//		
+//
 //		grid.addColumn("name");
 //
 //		grid.setSizeFull();
 //		//grid.setColumns("name", "vehicleHours", "vehicleKM", "driverHours", "overHead", "profitMargin");
 ////		grid.addco
-//		
+//
 //		return grid;
 //	}
 
-	private Component getHeaderPanel()
-	{
+    private Component getHeaderPanel() {
 //        priceListText.setPlaceholder("New Pricelist name ...");
 //        priceListText.setClearButtonVisible(true);
 //        priceListText.setWidth("20em");
@@ -129,33 +215,32 @@ public class QuoteView extends VerticalLayout{
 
         pricelistCombo.setWidth("20em");
 //        pricelistCombo.addValueChangeListener(e -> updatePriceTable());
-        
+
         itiCombo.setWidth("20em");
 //        itiCombo.addValueChangeListener(e -> updateList());
 
 
 //        var toolbar = new HorizontalLayout(priceListText,  addPricelistButton, pricelistCombo, savePricelistButton); 
-        var toolbar = new HorizontalLayout(pricelistCombo, itiCombo); 
+        var toolbar = new HorizontalLayout(pricelistCombo, itiCombo);
 
-        toolbar.addClassName("toolbar"); 
+        toolbar.addClassName("toolbar");
 
         toolbar.setAlignItems(Alignment.BASELINE);
         return toolbar;
-	}
-	
-	private void addPricelist() {
-		ZJTPricelist pl = new ZJTPricelist();
-		pl.setName(priceListText.getValue());
-		service.save(pl);
-		priceListText.clear();
-		
-		m_pricelists.add(pl);
-		pricelistCombo.setItems(m_pricelists);
-		pricelistCombo.setValue(pl);
-	}
+    }
 
-	private void savePriceList()
-	{
+    private void addPricelist() {
+        ZJTPricelist pl = new ZJTPricelist();
+        pl.setName(priceListText.getValue());
+        service.save(pl);
+        priceListText.clear();
+
+        m_pricelists.add(pl);
+        pricelistCombo.setItems(m_pricelists);
+        pricelistCombo.setValue(pl);
+    }
+
+    private void savePriceList() {
 //		if (m_activeLegs == null) {
 //			
 //		}
@@ -172,13 +257,13 @@ public class QuoteView extends VerticalLayout{
 //			
 //		}
 //		//m_activeLegs.stream().filter(s -> (s.getZjt_product_id() +"").equals(it))
-	}
+    }
 
-	private void updatePriceTable() {
-		
-		List<PriceListRow> rows = service.getTabulatedItems(pricelistCombo.getValue());
-		
-		grid.setItems(rows);
+    private void updatePriceTable() {
+
+        List<PriceListRow> rows = service.getTabulatedItems(pricelistCombo.getValue());
+
+//        grid.setItems(rows);
 //		legsCombo.setItems(new ArrayList<ZJTProduct>());
 //		ZJTProduct itinerary = itiCombo.getValue();
 //		if (itinerary == null) {
@@ -233,19 +318,18 @@ public class QuoteView extends VerticalLayout{
 //		lastPivotTable = table;
 //		this.add(table);
 
-	}
-	
-	private void loadInit()
-	{
-		m_pricelists = service.getPriceLists(null);
-		
-		pricelistCombo.setItems(m_pricelists);
-		pricelistCombo.setItemLabelGenerator(ZJTPricelist::getName);
-		
-		m_itineraries = service.findAllTripItineraries(null);
-		
-		itiCombo.setItems(m_itineraries);
-		itiCombo.setItemLabelGenerator(ZJTProduct::getName);
-	}
+    }
+
+    private void loadInit() {
+        m_pricelists = service.getPriceLists(null);
+
+        pricelistCombo.setItems(m_pricelists);
+        pricelistCombo.setItemLabelGenerator(ZJTPricelist::getName);
+
+        m_itineraries = service.findAllTripItineraries(null);
+
+        itiCombo.setItems(m_itineraries);
+        itiCombo.setItemLabelGenerator(ZJTProduct::getName);
+    }
 
 }

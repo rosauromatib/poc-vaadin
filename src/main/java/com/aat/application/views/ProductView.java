@@ -1,15 +1,16 @@
 package com.aat.application.views;
 
+import com.aat.application.data.entity.PriceListRow;
+import com.aat.application.data.entity.ZJTPricingType;
 import com.aat.application.data.entity.ZJTProduct;
+import com.aat.application.data.entity.ZJTResourceType;
 import com.aat.application.data.service.ProductService;
 import com.aat.application.form.ProductForm;
 import com.vaadin.componentfactory.tuigrid.TuiGrid;
-import com.vaadin.componentfactory.tuigrid.model.Column;
-import com.vaadin.componentfactory.tuigrid.model.ColumnBaseOption;
-import com.vaadin.componentfactory.tuigrid.model.Item;
-import com.vaadin.componentfactory.tuigrid.model.RelationItem;
+import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -17,7 +18,11 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import javax.management.relation.Relation;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -28,24 +33,23 @@ public class ProductView extends VerticalLayout {
 
     //	private Grid<ZJTProduct> grid = new Grid<>(ZJTProduct.class);
     TuiGrid grid;
+    List<ZJTProduct> zjtProductList;
     TextField filterText = new TextField();
 
 
     private ProductForm form;
 
-    private ProductService service;
-
+    private final ProductService service;
+    Span sp = new Span("Here is.");
     public ProductView(ProductService service) {
         this.service = service;
-        grid = new TuiGrid(null, this.getTableData(),
-                this.getColumns(), null);
 
         setSizeFull();
 
         configureGrid();
         configureForm();
         getContent();
-        add(getToolbar(), getContent());
+        add(sp, getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -53,15 +57,18 @@ public class ProductView extends VerticalLayout {
     private List<Item> getTableData() {
 
         List<Item> TableData = new ArrayList<>();
-        List<ZJTProduct> listPricingType;
-        listPricingType = service.findAllProducts(filterText.getValue());
+        zjtProductList = service.findAllProducts(filterText.getValue());
+
+        Comparator<ZJTProduct> comparator = Comparator.comparing(item -> item.getName());
+        Collections.sort(zjtProductList, comparator);
+
         List<String> headers = List.of("Name", "Description", "Resource Type");
         for (ZJTProduct zjtProduct :
-                listPricingType) {
-            TableData.add(new RelationItem(
+                zjtProductList) {
+            TableData.add(new GuiItem(
                     List.of(zjtProduct.getName(),
-                            zjtProduct.getDescription(),
-                            zjtProduct.getResourceType() != null ? zjtProduct.getResourceType().getName() : ""),
+                            zjtProduct.getDescription() != null ? zjtProduct.getDescription() : "",
+                            zjtProduct.getResourceType() != null ? String.valueOf(zjtProduct.getResourceType().getZjt_resourcetype_id()) : ""),
                     headers));
 
         }
@@ -70,10 +77,38 @@ public class ProductView extends VerticalLayout {
     }
 
     private List<Column> getColumns() {
-        List<Column> columns = List.of(
-                new Column(new ColumnBaseOption(0, "Name", "Name", 250, "center", "")),
-                new Column(new ColumnBaseOption(1, "Description", "Description", 250, "center", "")),
-                new Column(new ColumnBaseOption(2, "Resource Type", "Resource Type", 250, "center", "")));
+
+        Column nameCol = new Column(new ColumnBaseOption(0, "Name", "Name", 250, "center", ""));
+        nameCol.setEditable(false);
+        nameCol.setSortable(true);
+        nameCol.setSortingType("asc");
+
+        Column desCol = new Column(new ColumnBaseOption(0, "Description", "Description", 250, "center", ""));
+        desCol.setEditable(true);
+        desCol.setMaxLength(10);
+        desCol.setType("input");
+        desCol.setSortable(true);
+        desCol.setSortingType("asc");
+
+        Column resourceTypeCol = new Column(new ColumnBaseOption(2, "Resource Type", "Resource Type", 250, "center", ""));
+        resourceTypeCol.setEditable(true);
+        resourceTypeCol.setMaxLength(10);
+        resourceTypeCol.setType("select");
+        resourceTypeCol.setRoot(true);
+        resourceTypeCol.setTarget("");
+        resourceTypeCol.setSortable(true);
+        resourceTypeCol.setSortingType("asc");
+
+        List<ZJTResourceType> resourceTypes = service.getResourceTypes();
+        List<RelationOption> combResourceTypes = new ArrayList<>();
+        for (ZJTResourceType resourceType :
+                resourceTypes) {
+            RelationOption option = new RelationOption(resourceType.getName(), String.valueOf(resourceType.getZjt_resourcetype_id()));
+            combResourceTypes.add(option);
+        }
+        resourceTypeCol.setRelationOptions(combResourceTypes);
+
+        List<Column> columns = List.of(nameCol, desCol, resourceTypeCol);
         return columns;
     }
 
@@ -102,16 +137,32 @@ public class ProductView extends VerticalLayout {
     }
 
     private void configureGrid() {
-        grid.addClassName("scheduler-grid");
+        grid = new TuiGrid();
 
+        List<Item> items = this.getTableData();
+        grid.setItems(items);
+        grid.setColumns(this.getColumns());
+
+        grid.addItemChangeListener(event -> {
+            GuiItem item = (GuiItem) items.get(event.getRow());
+            String colName = event.getColName();
+            int index = item.getHeaders().indexOf(colName);
+            ZJTProduct product = zjtProductList.get(event.getRow());
+            if(index == 1)
+                product.setDescription(event.getColValue());
+            else{
+                ZJTResourceType resourceType = product.getResourceType();
+                if(resourceType == null)
+                    resourceType = new ZJTResourceType();
+                resourceType.setZjt_resourcetype_id(Integer.parseInt(event.getColValue()));
+                product.setResourceType(resourceType);
+            }
+
+            service.save(product);
+        });
+        grid.addClassName("scheduler-grid");
         grid.setSizeFull();
-//		grid.setColumns("name", "description");
-//		grid.addColumn(product ->
-//			product.getResourceType() != null ? product.getResourceType().getName() : null)
-//			.setHeader("Resource Type");
-//		grid.getColumns().forEach(col -> col.setAutoWidth(true));
-//		grid.asSingleSelect().addValueChangeListener(event -> edit(event.getValue()));
-        grid.setHeaderHeight(100);
+//        grid.setHeaderHeight(100);
         grid.setTableWidth(750);
         grid.setTableHeight(750);
     }
@@ -128,7 +179,8 @@ public class ProductView extends VerticalLayout {
 
     private void updateList() {
 //		grid.setItems(service.findAllProducts(filterText.getValue()));
-
+        grid.setItems(this.getTableData());
+        add(getContent());
     }
 
     public void edit(ZJTProduct product) {

@@ -1,15 +1,13 @@
 package com.aat.application.views;
 
-import com.aat.application.data.entity.ZJTElement;
+import com.aat.application.data.entity.*;
 import com.aat.application.data.service.TripElementService;
 import com.aat.application.form.TripElementForm;
 import com.vaadin.componentfactory.tuigrid.TuiGrid;
-import com.vaadin.componentfactory.tuigrid.model.Column;
-import com.vaadin.componentfactory.tuigrid.model.ColumnBaseOption;
-import com.vaadin.componentfactory.tuigrid.model.Item;
-import com.vaadin.componentfactory.tuigrid.model.RelationItem;
+import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -18,6 +16,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @PageTitle("Trip Element")
@@ -27,22 +27,20 @@ public class TripElementView extends VerticalLayout {
 
     //	private Grid<ZJTElement> grid = new Grid<>(ZJTElement.class);
     TuiGrid grid;
+    List<ZJTElement> elements;
     TextField filterText = new TextField();
 
     private TripElementForm form;
 
-    private TripElementService service;
+    private final TripElementService service;
 
     public TripElementView(TripElementService service) {
         this.service = service;
-        grid = new TuiGrid(null, this.getTableData(),
-                this.getColumns(), null);
 
         setSizeFull();
 
         configureGrid();
         configureForm();
-        getContent();
         add(getToolbar(), getContent());
         updateList();
         closeEditor();
@@ -51,19 +49,23 @@ public class TripElementView extends VerticalLayout {
     private List<Item> getTableData() {
 
         List<Item> TableData = new ArrayList<>();
-        List<ZJTElement> listPricingType;
         if (filterText != null)
-            listPricingType = service.findAllElements(filterText.getValue());
+            elements = service.findAllElements(filterText.getValue());
         else
-            listPricingType = service.findAllElements(null);
+            elements = service.findAllElements(null);
+//        Define a custom comparator to sort by the "No" column
+        Comparator<ZJTElement> comparator = Comparator.comparing(item -> (item.getName()));
+        // Sort the TableData list using the custom comparator
+        Collections.sort(elements, comparator);
+
         List<String> headers = List.of("Name", "Uom", "Elementlist", "Pricing Type");
         for (ZJTElement zjtElement :
-                listPricingType) {
-            TableData.add(new RelationItem(
+                elements) {
+            TableData.add(new GuiItem(
                     List.of(zjtElement.getName(),
                             zjtElement.getUom().toString(),
                             zjtElement.getElementlist().toString(),
-                            zjtElement.getPricingType().getName()),
+                            String.valueOf(zjtElement.getPricingType().getZjt_pricingtype_id())),
                     headers));
 
         }
@@ -72,11 +74,64 @@ public class TripElementView extends VerticalLayout {
     }
 
     private List<Column> getColumns() {
-        List<Column> columns = List.of(
-                new Column(new ColumnBaseOption(0, "Name", "Name", 250, "center", "")),
-                new Column(new ColumnBaseOption(1, "Uom", "Uom", 250, "center", "")),
-                new Column(new ColumnBaseOption(2, "Elementlist", "Elementlist", 250, "center", "")),
-                new Column(new ColumnBaseOption(2, "Pricing Type", "Pricing Type", 250, "center", "")));
+        Column nameCol = new Column(new ColumnBaseOption(0, "Name", "Name", 150, "center", ""));
+        nameCol.setEditable(true);
+        nameCol.setMaxLength(10);
+        nameCol.setType("input");
+        nameCol.setSortable(true);
+        nameCol.setSortingType("asc");
+
+        Column uomCol = new Column(new ColumnBaseOption(1, "Uom", "Uom", 150, "center", ""));
+        uomCol.setEditable(true);
+        uomCol.setMaxLength(10);
+        uomCol.setType("select");
+        uomCol.setRoot(true);
+        uomCol.setTarget("");
+        uomCol.setSortable(true);
+        uomCol.setSortingType("asc");
+        List<RelationOption> uomList = new ArrayList<>();
+        for (Uom uom : Uom.values()) {
+            RelationOption option = new RelationOption(uom.toString(), uom.toString());
+            uomList.add(option);
+        }
+
+        uomCol.setRelationOptions(uomList);
+
+        Column elementlistCol = new Column(new ColumnBaseOption(2, "Elementlist", "Elementlist", 150, "center", ""));
+        elementlistCol.setEditable(false);
+        elementlistCol.setMaxLength(10);
+        elementlistCol.setType("select");
+        elementlistCol.setRoot(true);
+        elementlistCol.setTarget("");
+        elementlistCol.setSortable(true);
+        elementlistCol.setSortingType("asc");
+        List<RelationOption> elementsList = new ArrayList<>();
+        for (ElementList elementList : ElementList.values()) {
+            RelationOption option = new RelationOption(elementList.toString(), elementList.toString());
+            elementsList.add(option);
+        }
+
+        elementlistCol.setRelationOptions(elementsList);
+
+        Column pricingTypeCol = new Column(new ColumnBaseOption(3, "Pricing Type", "Pricing Type", 150, "center", ""));
+        pricingTypeCol.setEditable(true);
+        pricingTypeCol.setMaxLength(10);
+        pricingTypeCol.setType("select");
+        pricingTypeCol.setRoot(true);
+        pricingTypeCol.setTarget("");
+        pricingTypeCol.setSortable(true);
+        pricingTypeCol.setSortingType("asc");
+        List<ZJTPricingType> pricingTypes = service.getPricingTypes();
+        List<RelationOption> combPricingTypes = new ArrayList<>();
+        for (ZJTPricingType pricingType :
+                pricingTypes) {
+            RelationOption option = new RelationOption(pricingType.getName(), String.valueOf(pricingType.getZjt_pricingtype_id()));
+            combPricingTypes.add(option);
+        }
+
+        pricingTypeCol.setRelationOptions(combPricingTypes);
+
+        List<Column> columns = List.of(nameCol, uomCol, elementlistCol, pricingTypeCol);
         return columns;
     }
 
@@ -106,18 +161,48 @@ public class TripElementView extends VerticalLayout {
     }
 
     private void configureGrid() {
+        grid = new TuiGrid();
         grid.addClassName("scheduler-grid");
 
+        List<Item> items = this.getTableData();
+        grid.setItems(items);
+        grid.setColumns(this.getColumns());
+
+        grid.addItemChangeListener(event -> {
+
+            GuiItem item = (GuiItem) items.get(event.getRow());
+            String colName = event.getColName();
+            int index = item.getHeaders().indexOf(colName);
+            ZJTElement row = elements.get(event.getRow());
+
+            switch (index) {
+                case 0:
+                    row.setName(event.getColValue());
+                    break;
+                case 1:
+                    row.setUom(Uom.valueOf(event.getColValue().substring(0, 1)));
+                    break;
+                case 2:
+                    for (ElementList enumValue : ElementList.values()) {
+                        if (enumValue.toString().equals(event.getColValue())) {
+                            row.setElementlist(enumValue);
+                            break;
+                        }
+                    }
+                    break;
+                case 3:
+                    ZJTPricingType pricingType = row.getPricingType();
+                    pricingType.setZjt_pricingtype_id(Integer.parseInt(event.getColValue()));
+                    row.setPricingType(pricingType);
+                    break;
+            }
+
+            service.save(row);
+
+        });
         grid.setSizeFull();
-//		grid.setColumns("name", "zjt_pricingtype_id");
-//        grid.setColumns("name", "uom", "elementlist");
-//        grid.addColumn(pricingtype -> pricingtype.getPricingType().getName()).setHeader("Pricing Type");
-//		grid.addColumn(product -> product.getName()).setHeader("Product Name");
-//		grid.getColumnByKey("zjt_pricingtype_id").setHeader("Pricing Type");
-//        grid.getColumns().forEach(col -> col.setAutoWidth(true));
-//        grid.asSingleSelect().addValueChangeListener(event -> edit(event.getValue()));
-        grid.setHeaderHeight(100);
-        grid.setTableWidth(1000);
+        grid.setHeaderHeight(50);
+        grid.setTableWidth(600);
         grid.setTableHeight(750);
     }
 
@@ -131,6 +216,8 @@ public class TripElementView extends VerticalLayout {
     }
 
     private void updateList() {
+        grid.setItems(this.getTableData());
+        add(getContent());
 //        grid.setItems(service.findAllElements(filterText.getValue()));
 
     }

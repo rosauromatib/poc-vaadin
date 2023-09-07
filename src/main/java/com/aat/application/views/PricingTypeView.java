@@ -1,5 +1,6 @@
 package com.aat.application.views;
 
+import com.aat.application.data.entity.ZJTElement;
 import com.aat.application.data.entity.ZJTPricingType;
 import com.aat.application.data.service.PricingTypeService;
 import com.aat.application.form.PricingTypeForm;
@@ -7,9 +8,10 @@ import com.vaadin.componentfactory.tuigrid.TuiGrid;
 import com.vaadin.componentfactory.tuigrid.model.Column;
 import com.vaadin.componentfactory.tuigrid.model.ColumnBaseOption;
 import com.vaadin.componentfactory.tuigrid.model.Item;
-import com.vaadin.componentfactory.tuigrid.model.RelationItem;
+import com.vaadin.componentfactory.tuigrid.model.GuiItem;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -18,6 +20,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @PageTitle("Pricing Type")
@@ -26,17 +30,16 @@ import java.util.List;
 public class PricingTypeView extends VerticalLayout {
 
     TuiGrid grid;
+    List<ZJTPricingType> listPricingType;
 
     TextField filterText = new TextField();
 
     private PricingTypeForm form;
 
-    private PricingTypeService service;
+    private final PricingTypeService service;
 
     public PricingTypeView(PricingTypeService service) {
         this.service = service;
-        grid = new TuiGrid(null, this.getTableData(),
-                this.getColumns(), null);
 
         setSizeFull();
 
@@ -52,30 +55,46 @@ public class PricingTypeView extends VerticalLayout {
     private List<Item> getTableData() {
 
         List<Item> TableData = new ArrayList<>();
-        List<ZJTPricingType> listPricingType;
         if (filterText != null)
             listPricingType = service.findAll(filterText.getValue());
         else
             listPricingType = service.findAll(null);
-        List<String> headers = List.of("No", "Name", "Description");
+
+        // Define a custom comparator to sort by the "No" column
+        Comparator<ZJTPricingType> comparator = Comparator.comparing(item -> item.getName());
+
+        // Sort the TableData list using the custom comparator
+        Collections.sort(listPricingType, comparator);
+
+        List<String> headers = List.of("Name", "Description");
         for (ZJTPricingType pricingType :
                 listPricingType) {
-            TableData.add(new RelationItem(
-                    List.of(String.valueOf(pricingType.getZjt_pricingtype_id()),
+            TableData.add(new GuiItem(
+                    List.of(
                             pricingType.getName(),
                             pricingType.getDescription()),
                     headers));
 
         }
-
         return TableData;
     }
 
     private List<Column> getColumns() {
-        List<Column> columns = List.of(
-                new Column(new ColumnBaseOption(0, "No", "No", 250, "center", "")),
-                new Column(new ColumnBaseOption(1, "Name", "Name", 250, "center", "")),
-                new Column(new ColumnBaseOption(2, "Description", "Description", 250, "center", "")));
+        Column nameCol = new Column(new ColumnBaseOption(0, "Name", "Name", 250, "center", ""));
+        nameCol.setEditable(true);
+        nameCol.setMaxLength(10);
+        nameCol.setType("input");
+        nameCol.setSortable(true);
+        nameCol.setSortingType("asc");
+
+        Column desCol = new Column(new ColumnBaseOption(1, "Description", "Description", 250, "center", ""));
+        desCol.setEditable(true);
+        desCol.setMaxLength(10);
+        desCol.setType("input");
+        desCol.setSortable(true);
+        desCol.setSortingType("asc");
+
+        List<Column> columns = List.of( nameCol, desCol);
         return columns;
     }
 
@@ -96,7 +115,9 @@ public class PricingTypeView extends VerticalLayout {
 
         Button addContactButton = new Button("Add");
         addContactButton.addClickListener(click -> add());
-        var toolbar = new HorizontalLayout(filterText, addContactButton);
+        Button removeContactButton = new Button("Delete");
+        removeContactButton.addClickListener(click -> add());
+        var toolbar = new HorizontalLayout(filterText, addContactButton, removeContactButton);
 
         toolbar.addClassName("toolbar");
 
@@ -105,6 +126,31 @@ public class PricingTypeView extends VerticalLayout {
 
     private void configureGrid() {
 //        grid.addClassName("scheduler-grid");
+        grid = new TuiGrid();
+
+        List<Item> items = this.getTableData();
+        grid.setItems(items);
+        grid.setColumns(this.getColumns());
+        grid.setRowHeaders(List.of("rowNum", "checkbox"));
+
+        grid.addItemChangeListener(event -> {
+            GuiItem item = (GuiItem) items.get(event.getRow());
+            String colName = event.getColName();
+            int index = item.getHeaders().indexOf(colName);
+            ZJTPricingType row = listPricingType.get(event.getRow());
+            switch (index) {
+                case 0:
+                    row.setZjt_pricingtype_id(Integer.parseInt(event.getColValue()));
+                    break;
+                case 1:
+                    row.setName(event.getColValue());
+                    break;
+                case 2:
+                    row.setDescription(event.getColValue());
+                    break;
+            }
+            service.save(row);
+        });
 
         grid.setSizeFull();
 //		grid.setColumns("name", "description");
@@ -112,7 +158,7 @@ public class PricingTypeView extends VerticalLayout {
 //		grid.getColumnByKey("zjt_pricingtype_id").setVisible(false);
 //		grid.getColumns().forEach(col -> col.setAutoWidth(true));
 //		grid.asSingleSelect().addValueChangeListener(event -> edit(event.getValue()));
-        grid.setHeaderHeight(100);
+        grid.setHeaderHeight(50);
         grid.setTableWidth(750);
         grid.setTableHeight(750);
     }
@@ -127,8 +173,8 @@ public class PricingTypeView extends VerticalLayout {
     }
 
     private void updateList() {
-//		grid.setItems(service.findAll(filterText.getValue()));
-
+        grid.setItems(this.getTableData());
+        add(getContent());
     }
 
     public void edit(ZJTPricingType po) {
@@ -145,7 +191,6 @@ public class PricingTypeView extends VerticalLayout {
 //		grid.asSingleSelect().clear();
         edit(new ZJTPricingType());
     }
-
 
     private void closeEditor() {
         form.setBean(null);
