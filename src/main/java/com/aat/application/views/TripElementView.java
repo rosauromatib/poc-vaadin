@@ -34,7 +34,6 @@ public class TripElementView extends VerticalLayout {
     private TripElementForm form;
 
     private final TripElementService service;
-    Span sp = new Span("Here is: ");
 
     public TripElementView(TripElementService service) {
         this.service = service;
@@ -43,7 +42,7 @@ public class TripElementView extends VerticalLayout {
 
         configureGrid();
         configureForm();
-        add(sp, getToolbar(), getContent());
+        add(getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -127,7 +126,6 @@ public class TripElementView extends VerticalLayout {
         List<RelationOption> combPricingTypes = new ArrayList<>();
         for (ZJTPricingType pricingType :
                 pricingTypes) {
-            sp.add(pricingType.getName() + ": ");
             RelationOption option = new RelationOption(pricingType.getName(), String.valueOf(pricingType.getZjt_pricingtype_id()));
             combPricingTypes.add(option);
         }

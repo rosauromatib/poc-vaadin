@@ -23,26 +23,26 @@ public class ZJTComponentLine implements ZJTPo {
 	private int zjt_componentline_id;
 
 	@ManyToOne
-	@JoinColumn(name="parent_id")
+	@JoinColumn(name="parent_id", referencedColumnName = "zjt_product_id", nullable = false)
 	private ZJTProduct parent;
 
 	@ManyToOne
-	@JoinColumn(name="product_id")
+	@JoinColumn(name="product_id", referencedColumnName = "zjt_product_id", nullable = false)
 	private ZJTProduct product;
 
 	@ManyToOne
 	@JoinColumn(name="zjt_element_id", referencedColumnName = "zjt_element_id")
 	private ZJTElement tripelement;
-	
+
 	@Enumerated(EnumType.STRING)
 	private Uom uom;
-	
+
 	@Column
 	private BigDecimal qty;
-	
+
 	@Column
 	private BigDecimal unitprice;
-	
+
 	@Column
 	private BigDecimal totalamt;
 
@@ -109,6 +109,6 @@ public class ZJTComponentLine implements ZJTPo {
 	public void setTotalamt(BigDecimal totalamt) {
 		this.totalamt = totalamt;
 	}
-	
-	
+
+
 }

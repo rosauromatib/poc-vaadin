@@ -38,7 +38,6 @@ public class PricingTypeView extends VerticalLayout {
     private PricingTypeForm form;
 
     private final PricingTypeService service;
-    Span sp = new Span("Here is.");
 
     public PricingTypeView(PricingTypeService service) {
         this.service = service;
@@ -49,7 +48,7 @@ public class PricingTypeView extends VerticalLayout {
         configureForm();
         getContent();
 
-        add(sp, getToolbar(), getContent());
+        add( getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -156,7 +155,7 @@ public class PricingTypeView extends VerticalLayout {
 
         grid.setSizeFull();
         grid.setHeaderHeight(50);
-        grid.setTableWidth(750);
+        grid.setTableWidth(500);
         grid.setTableHeight(750);
     }
 
@@ -213,11 +212,8 @@ public class PricingTypeView extends VerticalLayout {
             return;
         for (int checkedRow :
                 grid.getCheckedItems()) {
-            sp.add(String.valueOf(listPricingType.get(checkedRow).getZjt_pricingtype_id()));
-            sp.add(": " + listPricingType.get(checkedRow).getName());
             service.delete(listPricingType.get(checkedRow));
         }
-        sp.add(grid.getCheckedItems().toString());
         grid.deleteItems(grid.getCheckedItems());
     }
 }

@@ -10,6 +10,7 @@ import com.vaadin.componentfactory.tuigrid.TuiGrid;
 import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -129,7 +130,10 @@ public class ProductView extends VerticalLayout {
 
         Button addContactButton = new Button("Add product");
         addContactButton.addClickListener(click -> add());
-        var toolbar = new HorizontalLayout(filterText, addContactButton);
+        Button removeContactButton = new Button("Delete");
+        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        removeContactButton.addClickListener(click -> delete());
+        var toolbar = new HorizontalLayout(filterText, addContactButton, removeContactButton);
 
         toolbar.addClassName("toolbar");
 
@@ -142,6 +146,7 @@ public class ProductView extends VerticalLayout {
         List<Item> items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
+        grid.setRowHeaders(List.of("rowNum", "checkbox"));
 
         grid.addItemChangeListener(event -> {
             GuiItem item = (GuiItem) items.get(event.getRow());
@@ -216,5 +221,15 @@ public class ProductView extends VerticalLayout {
         service.delete(event.getProduct());
         updateList();
         closeEditor();
+    }
+
+    private void delete() {
+        if (grid.getCheckedItems().size() == 0)
+            return;
+        for (int checkedRow :
+                grid.getCheckedItems()) {
+            service.delete(zjtProductList.get(checkedRow));
+        }
+        grid.deleteItems(grid.getCheckedItems());
     }
 }

@@ -34,7 +34,7 @@ public class ZJTProduct implements ZJTPo {
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ZJTPriceListItem> children1;
 
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ZJTComponentLine> children;
 
 	@Enumerated(EnumType.STRING)
