@@ -37,11 +37,9 @@ public class ProductView extends VerticalLayout {
     List<ZJTProduct> zjtProductList;
     TextField filterText = new TextField();
 
-
     private ProductForm form;
 
     private final ProductService service;
-    Span sp = new Span("Here is.");
     public ProductView(ProductService service) {
         this.service = service;
 
@@ -50,7 +48,7 @@ public class ProductView extends VerticalLayout {
         configureGrid();
         configureForm();
         getContent();
-        add(sp, getToolbar(), getContent());
+        add(getToolbar(), getContent());
         updateList();
         closeEditor();
     }

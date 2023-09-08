@@ -4,14 +4,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aat.application.data.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import com.aat.application.data.entity.TripType;
-import com.aat.application.data.entity.ZJTComponentLine;
-import com.aat.application.data.entity.ZJTElement;
-import com.aat.application.data.entity.ZJTProduct;
-import com.aat.application.data.entity.ZJTResourceType;
 import com.aat.application.data.repository.ComponentLineRepository;
 import com.aat.application.data.repository.ProductRepository;
 import com.aat.application.data.repository.ResourceTypeRepository;
@@ -32,7 +29,7 @@ public class ProductService {
         this.teRepo = teRepo;
         this.clRepo = clRepo;
     }
-
+    @Autowired
     private final ProductRepository repository;
     private final TripElementRepository teRepo;
     private final ResourceTypeRepository rtRepo;
@@ -43,8 +40,20 @@ public class ProductService {
 
     private List<ZJTElement> allTripElements = null;
 
+    public void saveParentWithChildren(ZJTProduct parent, List<ZJTPriceListItem> children) {
+        parent.setChildren1(children);
+        repository.save(parent);
+    }
     public void save(ZJTProduct po) {
-        repository.save(po);
+        try {
+            repository.save(po);
+        } catch (DataIntegrityViolationException e) {
+            // Handle duplicate key value violation
+            // You can choose to update the existing record or throw an exception
+            // For example, you can update the existing record with the new values
+            if(po != null)
+                repository.saveAndFlush(po);
+        }
     }
 
     public void delete(ZJTProduct po) {
@@ -97,6 +106,7 @@ public class ProductService {
                 product.setTripType(TripType.TC);
                 product.setName(resourceType.getName() + " - " + tripElement.getName());
 //				System.out.println(resourceType.getName() +" - " + tripElement.getName());
+
                 save(product);
             }
         }

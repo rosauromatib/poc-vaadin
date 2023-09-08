@@ -151,6 +151,7 @@ public class QuoteService {
 		
 		if (item == null) {
 			item = new ZJTPriceListItem();
+			product.getChildren1().add(item);
 			item.setPricelist(pricelist);
 			item.setProduct(product);
 			item.setPrice(BigDecimal.ZERO);

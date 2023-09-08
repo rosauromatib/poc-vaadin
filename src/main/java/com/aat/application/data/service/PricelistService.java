@@ -179,8 +179,8 @@ public class PricelistService {
 
         if (item == null) {
             item = new ZJTPriceListItem();
-            item.setPricelist(pricelist);
             item.setProduct(product);
+            item.setPricelist(pricelist);
             item.setPrice(BigDecimal.ZERO);
             if (pricelist != null)
                 itemRepository.save(item);

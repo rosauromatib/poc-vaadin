@@ -30,7 +30,7 @@ public class ProductForm extends FormLayout {
 	ComboBox<ZJTElement> tripElement = new ComboBox<>("Trip Element");
 	
 	Button save = new Button("Save");
-	Button delete = new Button("Delete");
+//	Button delete = new Button("Delete");
 	Button close = new Button("Cancel");
 	  
 	public ProductForm(List<ZJTResourceType> resourceTypes, List<ZJTElement> tripElements) 
@@ -55,7 +55,7 @@ public class ProductForm extends FormLayout {
 	private HorizontalLayout createButtonsLayout() {
 		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+//		delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
 		close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		save.addClickShortcut(Key.ENTER);
@@ -63,9 +63,9 @@ public class ProductForm extends FormLayout {
 		close.addClickShortcut(Key.ESCAPE);
 
 		save.addClickListener(event -> validateAndSave());
-		delete.addClickListener(event -> fireEvent(new DeleteEvent(this, binder.getBean())));
+//		delete.addClickListener(event -> fireEvent(new DeleteEvent(this, binder.getBean())));
 		close.addClickListener(event -> fireEvent(new CloseEvent(this)));
-		return new HorizontalLayout(save, delete, close);
+		return new HorizontalLayout(save, close);
 
 	}
 	

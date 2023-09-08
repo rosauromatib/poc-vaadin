@@ -2,6 +2,7 @@ package com.aat.application.data.entity;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -32,10 +33,13 @@ public class ZJTProduct implements ZJTPo {
 	private ZJTElement tripElement;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ZJTPriceListItem> children1;
+	private List<ZJTPriceListItem> children1= new ArrayList<>();;
 
 	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ZJTComponentLine> children;
+	private List<ZJTComponentLine> children2= new ArrayList<>();;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ZJTComponentLine> children3= new ArrayList<>();;
 
 	@Enumerated(EnumType.STRING)
 	@NotNull
@@ -164,5 +168,39 @@ public class ZJTProduct implements ZJTPo {
 
 	public void setTriplegeach(BigDecimal triplegeach) {
 		this.triplegeach = triplegeach;
+	}
+
+	public List<ZJTPriceListItem> getChildren1() {
+		return children1;
+	}
+
+	public void setChildren1(List<ZJTPriceListItem> children1) {
+		if (this.children1 != null) {
+			for (ZJTPriceListItem item : new ArrayList<>(this.children1)) {
+				item.setProduct(null); // Set the product to null to remove the reference
+			}
+		}
+		if (children1 != null) {
+			for (ZJTPriceListItem item : children1) {
+				item.setProduct(this); // Set the product to the current instance
+			}
+		}
+		this.children1 = children1;
+	}
+
+	public List<ZJTComponentLine> getChildren2() {
+		return children2;
+	}
+
+	public void setChildren2(List<ZJTComponentLine> children2) {
+		this.children2 = children2;
+	}
+
+	public List<ZJTComponentLine> getChildren3() {
+		return children3;
+	}
+
+	public void setChildren3(List<ZJTComponentLine> children3) {
+		this.children3 = children3;
 	}
 }
