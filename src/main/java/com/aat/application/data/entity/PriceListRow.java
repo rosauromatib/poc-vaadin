@@ -86,8 +86,10 @@ public class PriceListRow {
 	}
 
 	public void setVehicleHourItem(ZJTPriceListItem vehicleHourItem) {
-		vehicleHours = vehicleHourItem.getPrice();
-		this.vehicleHourItem = vehicleHourItem;
+		if(vehicleHourItem != null) {
+			vehicleHours = vehicleHourItem.getPrice();
+			this.vehicleHourItem = vehicleHourItem;
+		}
 	}
 
 	public ZJTPriceListItem getVehicleKMItem() {
@@ -95,8 +97,10 @@ public class PriceListRow {
 	}
 
 	public void setVehicleKMItem(ZJTPriceListItem vehicleKMItem) {
-		vehicleKM = vehicleKMItem.getPrice();
-		this.vehicleKMItem = vehicleKMItem;
+		if(vehicleKMItem != null) {
+			vehicleKM = vehicleKMItem.getPrice();
+			this.vehicleKMItem = vehicleKMItem;
+		}
 	}
 
 	public ZJTPriceListItem getDriverHourItem() {
@@ -104,8 +108,10 @@ public class PriceListRow {
 	}
 
 	public void setDriverHourItem(ZJTPriceListItem driverHourItem) {
-		driverHours = driverHourItem.getPrice();
-		this.driverHourItem = driverHourItem;
+		if(driverHourItem != null) {
+			driverHours = driverHourItem.getPrice();
+			this.driverHourItem = driverHourItem;
+		}
 	}
 
 	public ZJTPriceListItem getOverHeadItem() {
@@ -113,8 +119,10 @@ public class PriceListRow {
 	}
 
 	public void setOverHeadItem(ZJTPriceListItem overHeadItem) {
-		overHead = overHeadItem.getPrice();
-		this.overHeadItem = overHeadItem;
+		if(overHeadItem != null) {
+			overHead = overHeadItem.getPrice();
+			this.overHeadItem = overHeadItem;
+		}
 	}
 
 	public ZJTPriceListItem getProfitMarginItem() {
@@ -122,8 +130,10 @@ public class PriceListRow {
 	}
 
 	public void setProfitMarginItem(ZJTPriceListItem profitMarginItem) {
-		profitMargin = profitMarginItem.getPrice();
-		this.profitMarginItem = profitMarginItem;
+		if(profitMarginItem != null) {
+			profitMargin = profitMarginItem.getPrice();
+			this.profitMarginItem = profitMarginItem;
+		}
 	}
 	
 }

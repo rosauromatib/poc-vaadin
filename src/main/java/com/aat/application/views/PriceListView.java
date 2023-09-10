@@ -7,6 +7,7 @@ import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -30,7 +31,6 @@ public class PriceListView extends VerticalLayout {
     ComboBox<ZJTPricelist> pricelistCombo = new ComboBox<>("Price List");
     TuiGrid grid;
     List<PriceListRow> listPricingType;
-
     private final BeanValidationBinder<PriceListRow> binder = new BeanValidationBinder<>(PriceListRow.class);
 
     private List<ZJTPricelist> m_pricelists;
@@ -52,6 +52,8 @@ public class PriceListView extends VerticalLayout {
 
         List<Item> TableData = new ArrayList<>();
         try {
+            if(pricelistCombo.getValue() == null)
+                return null;
             listPricingType = service.getTabulatedItems(pricelistCombo.getValue());
 
             Comparator<PriceListRow> comparator = Comparator.comparing(item -> item.getName());
@@ -245,12 +247,13 @@ public class PriceListView extends VerticalLayout {
 
         for (PriceListRow priceListRow :
                 rows) {
+//            sp.add(String.valueOf(priceListRow.getName()+": "+ String.valueOf(priceListRow.getVehicleHours())));
             items.add(new GuiItem(List.of(priceListRow.getName(),
-                    String.valueOf(priceListRow.getVehicleHours()),
-                    String.valueOf(priceListRow.getVehicleKM()),
-                    String.valueOf(priceListRow.getDriverHours()),
-                    String.valueOf(priceListRow.getOverHead()),
-                    String.valueOf(priceListRow.getProfitMargin())),
+                    priceListRow.getVehicleHours() != null ? String.valueOf(priceListRow.getVehicleHours()) :  String.valueOf(0),
+                    priceListRow.getVehicleKM()!= null ? String.valueOf(priceListRow.getVehicleKM()) : String.valueOf(0),
+                    priceListRow.getDriverHours()!= null ? String.valueOf(priceListRow.getDriverHours()) : String.valueOf(0),
+                    priceListRow.getOverHead()!= null ? String.valueOf(priceListRow.getOverHead()) : String.valueOf(0),
+                    priceListRow.getProfitMargin()!= null ? String.valueOf(priceListRow.getProfitMargin()) : String.valueOf(0)),
                     headers));
         }
         grid.setItems(items);
@@ -267,7 +270,6 @@ public class PriceListView extends VerticalLayout {
                 case 2:
                     row.setVehicleKM(new BigDecimal(event.getColValue()));
                     break;
-
                 case 3:
                     row.setDriverHours(new BigDecimal(event.getColValue()));
                     break;

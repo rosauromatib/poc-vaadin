@@ -5,15 +5,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aat.application.data.entity.*;
 import org.springframework.stereotype.Service;
 
-import com.aat.application.data.entity.ElementList;
-import com.aat.application.data.entity.PriceListRow;
-import com.aat.application.data.entity.TripType;
-import com.aat.application.data.entity.ZJTPriceListItem;
-import com.aat.application.data.entity.ZJTPricelist;
-import com.aat.application.data.entity.ZJTProduct;
-import com.aat.application.data.entity.ZJTResourceType;
 import com.aat.application.data.repository.PricelistItemRepository;
 import com.aat.application.data.repository.PricelistRepository;
 import com.aat.application.data.repository.ProductRepository;
@@ -104,9 +98,9 @@ public class PricelistService {
         item = getItem(items, product, pricelist);
         updatePrice(item, row.getOverHead());
 
-//			product = getProduct(tcs, rt.getName(), ElementList.AE);
-//			item = getItem(items, product, pricelist);
-//			row.set(item);
+        product = getProduct(tcs, row.getName(), ElementList.AE);
+        item = getItem(items, product, pricelist);
+        updatePrice(item, row.getOverHead());
 
     }
 
@@ -184,6 +178,7 @@ public class PricelistService {
             item.setPrice(BigDecimal.ZERO);
             if (pricelist != null)
                 itemRepository.save(item);
+            return null;
         }
         items.add(item);
         return item;
