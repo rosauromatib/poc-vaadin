@@ -185,7 +185,10 @@ public class PricingTypeView extends VerticalLayout {
 
     private void add() {
 //		grid.asSingleSelect().clear();
-        edit(new ZJTPricingType());
+//        edit(new ZJTPricingType());
+        List<String> headers = List.of("Name", "Description");
+        grid.addItem(List.of(new GuiItem(List.of("", ""), headers)));
+        add(grid);
     }
 
     private void closeEditor() {
