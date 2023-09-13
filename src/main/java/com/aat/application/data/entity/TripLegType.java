@@ -7,9 +7,9 @@ package com.aat.application.data.entity;
 public enum TripLegType {
 	LR("Laden Running"), LS ("Laden Standing"), UR ("Unladen Running"), US("Unladen Standing"); 
 	
-    private String name;
+    private final String name;
 
-    private TripLegType(String name) {
+    TripLegType(String name) {
         this.name = name;
     }
 

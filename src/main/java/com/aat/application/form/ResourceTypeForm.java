@@ -71,7 +71,7 @@ public class ResourceTypeForm extends FormLayout {
 
     // Events
     public static abstract class ResourceTypeFormEvent extends ComponentEvent<ResourceTypeForm> {
-        private ZJTResourceType bean;
+        private final ZJTResourceType bean;
 
         protected ResourceTypeFormEvent(ResourceTypeForm source, ZJTResourceType bean) {
 

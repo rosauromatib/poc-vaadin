@@ -17,12 +17,12 @@ import com.vaadin.flow.router.RouteAlias;
 @Route(value = "vehicle0", layout = MainLayout.class)
 public class Vehicle0View extends VerticalLayout {
 	
-	private TextField textVIN;
-	private TextField textPlateNo;
-	private NumberField numSeatingCapacity;
-	private Button btnSave;
+	private final TextField textVIN;
+	private final TextField textPlateNo;
+	private final NumberField numSeatingCapacity;
+	private final Button btnSave;
 	
-	private Grid<Vehicle> grid = new Grid<>(Vehicle.class);
+	private final Grid<Vehicle> grid = new Grid<>(Vehicle.class);
 	
 	
     private TextField name;

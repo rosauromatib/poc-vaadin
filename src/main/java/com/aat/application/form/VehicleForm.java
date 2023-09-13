@@ -123,7 +123,7 @@ public class VehicleForm extends FormLayout {
 	
 	// Events
 	public static abstract class VehicleFormEvent extends ComponentEvent<VehicleForm> {
-	  private ZJTVehicle bean;
+	  private final ZJTVehicle bean;
 
 	  protected VehicleFormEvent(VehicleForm source, ZJTVehicle bean) { 
 

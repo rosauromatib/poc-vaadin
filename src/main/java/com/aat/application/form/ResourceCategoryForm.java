@@ -63,7 +63,7 @@ public class ResourceCategoryForm extends FormLayout {
 
     // Events
     public static abstract class ResourceCategoryFormEvent extends ComponentEvent<ResourceCategoryForm> {
-        private ZJTResourceCategory bean;
+        private final ZJTResourceCategory bean;
 
         protected ResourceCategoryFormEvent(ResourceCategoryForm source, ZJTResourceCategory bean) {
 

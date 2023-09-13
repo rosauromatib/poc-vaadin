@@ -7,9 +7,9 @@ package com.aat.application.data.entity;
 public enum TripType {
 	TA("Trip Actual"), TL ("Trip Leg"), TI ("Trip Itinerary"), LI("Leg Itinerary"), TC("Trip Component"); 
 	
-    private String name;
+    private final String name;
 
-    private TripType(String name) {
+    TripType(String name) {
         this.name = name;
     }
 

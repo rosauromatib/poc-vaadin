@@ -67,7 +67,7 @@ public class PricingTypeFormTemplate extends FormLayout {
 	
 	// Events
 	public static abstract class PricingTypeFormEvent extends ComponentEvent<PricingTypeFormTemplate> {
-	  private ZJTPricingType bean;
+	  private final ZJTPricingType bean;
 
 	  protected PricingTypeFormEvent(PricingTypeFormTemplate source, ZJTPricingType bean) { 
 

@@ -33,15 +33,15 @@ public class ZJTProduct implements ZJTPo {
 	private ZJTElement tripElement;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ZJTPriceListItem> children1= new ArrayList<>();;
+	private List<ZJTPriceListItem> children1= new ArrayList<>();
 
-	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ZJTComponentLine> children2= new ArrayList<>();;
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ZJTComponentLine> children2= new ArrayList<>();
 
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ZJTComponentLine> children3= new ArrayList<>();;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ZJTComponentLine> children3= new ArrayList<>();
 
-	@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
 	@NotNull
 	private TripType tripType;
 

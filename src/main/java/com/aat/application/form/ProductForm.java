@@ -83,7 +83,7 @@ public class ProductForm extends FormLayout {
 	
 	// Events
 	public static abstract class ProductFormEvent extends ComponentEvent<ProductForm> {
-	  private ZJTProduct product;
+	  private final ZJTProduct product;
 
 	  protected ProductFormEvent(ProductForm source, ZJTProduct product) { 
 

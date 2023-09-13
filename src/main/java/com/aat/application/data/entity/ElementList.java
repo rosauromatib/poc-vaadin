@@ -10,9 +10,9 @@ package com.aat.application.data.entity;
 public enum ElementList {
 	VH("Vehicle Hours"), OH("Over Head"), VK("Vehicle KM"), PM("Profit Margin"), DH("Driver Hours"), AE("A & E F");
 	
-    private String name;
+    private final String name;
 
-    private ElementList(String name) {
+    ElementList(String name) {
         this.name = name;
     }
 

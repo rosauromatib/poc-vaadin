@@ -10,9 +10,9 @@ package com.aat.application.data.entity;
 public enum Uom {
 	H("Hour"), K ("KM"), E ("Each");
 	
-    private String name;
+    private final String name;
 
-    private Uom(String name) {
+    Uom(String name) {
         this.name = name;
     }
 

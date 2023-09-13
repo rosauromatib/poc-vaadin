@@ -79,7 +79,7 @@ public class TripElementForm extends FormLayout {
 	
 	// Events
 	public static abstract class TripElementFormEvent extends ComponentEvent<TripElementForm> {
-	  private ZJTElement bean;
+	  private final ZJTElement bean;
 
 	  protected TripElementFormEvent(TripElementForm source, ZJTElement bean) { 
 

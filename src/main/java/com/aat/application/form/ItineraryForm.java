@@ -83,7 +83,7 @@ public class ItineraryForm extends FormLayout {
 	
 	// Events
 	public static abstract class ProductFormEvent extends ComponentEvent<ItineraryForm> {
-	  private ZJTProduct product;
+	  private final ZJTProduct product;
 
 	  protected ProductFormEvent(ItineraryForm source, ZJTProduct product) { 
 

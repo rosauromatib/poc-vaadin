@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @PageTitle("Pricing Type")
 @Route(value = "pricingtype", layout = MainLayout.class)
@@ -32,12 +33,14 @@ public class PricingTypeView extends VerticalLayout {
 
     TuiGrid grid;
     List<ZJTPricingType> listPricingType;
-
+    List<Item> items = new ArrayList<>();
     TextField filterText = new TextField();
 
     private PricingTypeForm form;
 
     private final PricingTypeService service;
+    private boolean bAdd = false;
+    private Span sp = new Span("Here is. ");
 
     public PricingTypeView(PricingTypeService service) {
         this.service = service;
@@ -48,7 +51,7 @@ public class PricingTypeView extends VerticalLayout {
         configureForm();
         getContent();
 
-        add( getToolbar(), getContent());
+        add(sp, getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -95,7 +98,7 @@ public class PricingTypeView extends VerticalLayout {
         desCol.setSortable(true);
         desCol.setSortingType("asc");
 
-        List<Column> columns = List.of( nameCol, desCol);
+        List<Column> columns = List.of(nameCol, desCol);
         return columns;
     }
 
@@ -129,28 +132,45 @@ public class PricingTypeView extends VerticalLayout {
     private void configureGrid() {
         grid = new TuiGrid();
         grid.addClassName("scheduler-grid");
-        List<Item> items = this.getTableData();
+        items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
         grid.setRowHeaders(List.of("rowNum", "checkbox"));
 
         grid.addItemChangeListener(event -> {
+            items = grid.getItems();
+            if (!bAdd) {
+                if (filterText != null)
+                    listPricingType = service.findAll(filterText.getValue());
+                else
+                    listPricingType = service.findAll(null);
+            }
+            bAdd = false;
             GuiItem item = (GuiItem) items.get(event.getRow());
             String colName = event.getColName();
+
             int index = item.getHeaders().indexOf(colName);
+            if (event.getRow() >= listPricingType.size()) {
+                ZJTPricingType zpt = new ZJTPricingType();
+                zpt.setName("");
+                zpt.setDescription("");
+                listPricingType.add(zpt);
+            }
             ZJTPricingType row = listPricingType.get(event.getRow());
+
             switch (index) {
                 case 0:
-                    row.setZjt_pricingtype_id(Integer.parseInt(event.getColValue()));
-                    break;
-                case 1:
                     row.setName(event.getColValue());
                     break;
-                case 2:
+                case 1:
                     row.setDescription(event.getColValue());
                     break;
             }
-            service.save(row);
+
+            // Asynchronously save the modified row
+            CompletableFuture.runAsync(() -> {
+                service.save(row);
+            });
         });
 
         grid.setSizeFull();
@@ -188,7 +208,8 @@ public class PricingTypeView extends VerticalLayout {
 //        edit(new ZJTPricingType());
         List<String> headers = List.of("Name", "Description");
         grid.addItem(List.of(new GuiItem(List.of("", ""), headers)));
-        add(grid);
+        bAdd = true;
+//        add(grid);
     }
 
     private void closeEditor() {
@@ -210,8 +231,8 @@ public class PricingTypeView extends VerticalLayout {
         closeEditor();
     }
 
-    private void delete(){
-        if(grid.getCheckedItems().size() == 0)
+    private void delete() {
+        if (grid.getCheckedItems().size() == 0)
             return;
         for (int checkedRow :
                 grid.getCheckedItems()) {
