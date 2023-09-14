@@ -179,6 +179,8 @@ public class ResourceTypeView extends VerticalLayout {
                 service.save(row);
             });
         });
+
+        grid.setAutoSave(true);
         grid.setSizeFull();
         grid.setHeaderHeight(50);
         grid.setTableWidth(500);
