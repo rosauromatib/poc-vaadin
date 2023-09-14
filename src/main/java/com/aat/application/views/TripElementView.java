@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @PageTitle("Trip Element")
 @Route(value = "tripelement", layout = MainLayout.class)
@@ -28,12 +29,14 @@ public class TripElementView extends VerticalLayout {
 
     //	private Grid<ZJTElement> grid = new Grid<>(ZJTElement.class);
     TuiGrid grid;
+    List<Item> items = new ArrayList<>();
     List<ZJTElement> elements;
     TextField filterText = new TextField();
 
     private TripElementForm form;
-
     private final TripElementService service;
+    private boolean bAdd = false;
+    Span sp = new Span("Here is: ");
 
     public TripElementView(TripElementService service) {
         this.service = service;
@@ -42,7 +45,7 @@ public class TripElementView extends VerticalLayout {
 
         configureGrid();
         configureForm();
-        add(getToolbar(), getContent());
+        add(sp, getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -168,16 +171,34 @@ public class TripElementView extends VerticalLayout {
         grid = new TuiGrid();
         grid.addClassName("scheduler-grid");
 
-        List<Item> items = this.getTableData();
+        items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
         grid.setRowHeaders(List.of("rowNum", "checkbox"));
 
         grid.addItemChangeListener(event -> {
 
+            items = grid.getItems();
+            if (!bAdd) {
+                if (filterText != null)
+                    elements = service.findAllElements(filterText.getValue());
+                else
+                    elements = service.findAll();
+            }
+            bAdd = false;
             GuiItem item = (GuiItem) items.get(event.getRow());
             String colName = event.getColName();
+
             int index = item.getHeaders().indexOf(colName);
+            sp.add(" " + index);
+            if (event.getRow() >= elements.size()) {
+                ZJTElement zpt = new ZJTElement();
+                zpt.setName("");
+                zpt.setUom(elements.get(0).getUom());
+                zpt.setElementlist(elements.get(0).getElementlist());
+                zpt.setPricingType(elements.get(0).getPricingType());
+                elements.add(zpt);
+            }
             ZJTElement row = elements.get(event.getRow());
 
             switch (index) {
@@ -202,7 +223,10 @@ public class TripElementView extends VerticalLayout {
                     break;
             }
 
-            service.save(row);
+            sp.add(row.getName() + row.getUom().toString());
+            CompletableFuture.runAsync(() -> {
+                service.save(row);
+            });
 
         });
         grid.setSizeFull();
@@ -239,7 +263,10 @@ public class TripElementView extends VerticalLayout {
 
     private void add() {
 //        grid.asSingleSelect().clear();
-        edit(new ZJTElement());
+//        edit(new ZJTElement());
+        List<String> headers = List.of("Name", "Uom", "Elementlist", "Pricing Type");
+        grid.addItem(List.of(new GuiItem(List.of("", "", "", ""), headers)));
+        bAdd = true;
     }
 
 
