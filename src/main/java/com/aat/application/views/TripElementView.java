@@ -29,6 +29,7 @@ public class TripElementView extends VerticalLayout {
 
     //	private Grid<ZJTElement> grid = new Grid<>(ZJTElement.class);
     TuiGrid grid;
+    List<String> headers = List.of("Name", "Uom", "Elementlist", "Pricing Type");
     List<Item> items = new ArrayList<>();
     List<ZJTElement> elements;
     TextField filterText = new TextField();
@@ -36,16 +37,15 @@ public class TripElementView extends VerticalLayout {
     private TripElementForm form;
     private final TripElementService service;
     private boolean bAdd = false;
-    Span sp = new Span("Here is: ");
 
     public TripElementView(TripElementService service) {
         this.service = service;
 
-        setSizeFull();
+//        setSizeFull();
 
         configureGrid();
         configureForm();
-        add(sp, getToolbar(), getContent());
+        add(getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -62,7 +62,7 @@ public class TripElementView extends VerticalLayout {
         // Sort the TableData list using the custom comparator
         Collections.sort(elements, comparator);
 
-        List<String> headers = List.of("Name", "Uom", "Elementlist", "Pricing Type");
+
         for (ZJTElement zjtElement :
                 elements) {
             TableData.add(new GuiItem(
@@ -155,12 +155,12 @@ public class TripElementView extends VerticalLayout {
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
 
-        Button addButton = new Button("Add");
-        addButton.addClickListener(click -> add());
-        Button removeContactButton = new Button("Delete");
-        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        removeContactButton.addClickListener(click -> delete());
-        var toolbar = new HorizontalLayout(filterText, addButton, removeContactButton);
+//        Button addButton = new Button("Add");
+//        addButton.addClickListener(click -> add());
+//        Button removeContactButton = new Button("Delete");
+//        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+//        removeContactButton.addClickListener(click -> delete());
+        var toolbar = new HorizontalLayout(filterText);
 
         toolbar.addClassName("toolbar");
 
@@ -171,10 +171,11 @@ public class TripElementView extends VerticalLayout {
         grid = new TuiGrid();
         grid.addClassName("scheduler-grid");
 
+        grid.setHeaders(headers);
         items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
-        grid.setRowHeaders(List.of("rowNum", "checkbox"));
+        grid.setRowHeaders(List.of("checkbox"));
 
         grid.addItemChangeListener(event -> {
 
@@ -190,13 +191,12 @@ public class TripElementView extends VerticalLayout {
             String colName = event.getColName();
 
             int index = item.getHeaders().indexOf(colName);
-            sp.add(" " + index);
-            if (event.getRow() >= elements.size()) {
+            if (event.getRow() >= elements.size() - 1) {
                 ZJTElement zpt = new ZJTElement();
                 zpt.setName("");
-                zpt.setUom(elements.get(0).getUom());
-                zpt.setElementlist(elements.get(0).getElementlist());
-                zpt.setPricingType(elements.get(0).getPricingType());
+                zpt.setUom(Uom.E);
+                zpt.setElementlist(ElementList.DH);
+                zpt.setPricingType(service.getPricingTypes().get(0));
                 elements.add(zpt);
             }
             ZJTElement row = elements.get(event.getRow());
@@ -223,16 +223,20 @@ public class TripElementView extends VerticalLayout {
                     break;
             }
 
-            sp.add(row.getName() + row.getUom().toString());
             CompletableFuture.runAsync(() -> {
                 service.save(row);
             });
 
         });
+        grid.addItemDeleteListener(listener -> {
+            delete();
+        });
         grid.setSizeFull();
+
+        grid.setAutoSave(true);
         grid.setHeaderHeight(50);
         grid.setTableWidth(600);
-        grid.setTableHeight(750);
+//        grid.setTableHeight(750);
     }
 
     private void configureForm() {
@@ -264,7 +268,6 @@ public class TripElementView extends VerticalLayout {
     private void add() {
 //        grid.asSingleSelect().clear();
 //        edit(new ZJTElement());
-        List<String> headers = List.of("Name", "Uom", "Elementlist", "Pricing Type");
         grid.addItem(List.of(new GuiItem(List.of("", "", "", ""), headers)));
         bAdd = true;
     }
@@ -290,12 +293,12 @@ public class TripElementView extends VerticalLayout {
     }
 
     private void delete() {
-        if (grid.getCheckedItems().size() == 0)
+        if (grid.getCheckedItems().length == 0)
             return;
         for (int checkedRow :
                 grid.getCheckedItems()) {
             service.delete(elements.get(checkedRow));
         }
-        grid.deleteItems(grid.getCheckedItems());
+
     }
 }

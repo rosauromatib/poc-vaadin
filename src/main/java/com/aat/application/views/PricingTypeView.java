@@ -32,26 +32,25 @@ import java.util.concurrent.CompletableFuture;
 public class PricingTypeView extends VerticalLayout {
 
     TuiGrid grid;
+    List<String> headers = List.of("Name", "Description");
     List<ZJTPricingType> listPricingType;
     List<Item> items = new ArrayList<>();
     TextField filterText = new TextField();
-
     private PricingTypeForm form;
 
     private final PricingTypeService service;
     private boolean bAdd = false;
-    private Span sp = new Span("Here is. ");
 
     public PricingTypeView(PricingTypeService service) {
         this.service = service;
 
-        setSizeFull();
+//        setSizeFull();
 
         configureGrid();
         configureForm();
         getContent();
 
-        add(sp, getToolbar(), getContent());
+        add(getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -70,7 +69,6 @@ public class PricingTypeView extends VerticalLayout {
         // Sort the TableData list using the custom comparator
         Collections.sort(listPricingType, comparator);
 
-        List<String> headers = List.of("Name", "Description");
         for (ZJTPricingType pricingType :
                 listPricingType) {
             TableData.add(new GuiItem(
@@ -117,12 +115,12 @@ public class PricingTypeView extends VerticalLayout {
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
 
-        Button addContactButton = new Button("Add");
-        addContactButton.addClickListener(click -> add());
-        Button removeContactButton = new Button("Delete");
-        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        removeContactButton.addClickListener(click -> delete());
-        var toolbar = new HorizontalLayout(filterText, addContactButton, removeContactButton);
+//        Button addContactButton = new Button("Add");
+//        addContactButton.addClickListener(click -> add());
+//        Button removeContactButton = new Button("Delete");
+//        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+//        removeContactButton.addClickListener(click -> delete());
+        var toolbar = new HorizontalLayout(filterText);
 
         toolbar.addClassName("toolbar");
 
@@ -132,10 +130,11 @@ public class PricingTypeView extends VerticalLayout {
     private void configureGrid() {
         grid = new TuiGrid();
         grid.addClassName("scheduler-grid");
+        grid.setHeaders(headers);
         items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
-        grid.setRowHeaders(List.of("rowNum", "checkbox"));
+        grid.setRowHeaders(List.of("checkbox"));
 
         grid.addItemChangeListener(event -> {
             items = grid.getItems();
@@ -150,7 +149,7 @@ public class PricingTypeView extends VerticalLayout {
             String colName = event.getColName();
 
             int index = item.getHeaders().indexOf(colName);
-            if (event.getRow() >= listPricingType.size()) {
+            if (event.getRow() >= listPricingType.size() - 1) {
                 ZJTPricingType zpt = new ZJTPricingType();
                 zpt.setName("");
                 zpt.setDescription("");
@@ -172,11 +171,15 @@ public class PricingTypeView extends VerticalLayout {
                 service.save(row);
             });
         });
+        grid.addItemDeleteListener(listener -> {
+            delete();
+        });
 
+        grid.setAutoSave(true);
         grid.setSizeFull();
         grid.setHeaderHeight(50);
         grid.setTableWidth(500);
-        grid.setTableHeight(750);
+//        grid.setTableHeight(750);
     }
 
     private void configureForm() {
@@ -206,7 +209,6 @@ public class PricingTypeView extends VerticalLayout {
     private void add() {
 //		grid.asSingleSelect().clear();
 //        edit(new ZJTPricingType());
-        List<String> headers = List.of("Name", "Description");
         grid.addItem(List.of(new GuiItem(List.of("", ""), headers)));
         bAdd = true;
 //        add(grid);
@@ -232,12 +234,12 @@ public class PricingTypeView extends VerticalLayout {
     }
 
     private void delete() {
-        if (grid.getCheckedItems().size() == 0)
+        if (grid.getCheckedItems().length == 0)
             return;
         for (int checkedRow :
                 grid.getCheckedItems()) {
             service.delete(listPricingType.get(checkedRow));
         }
-        grid.deleteItems(grid.getCheckedItems());
+
     }
 }

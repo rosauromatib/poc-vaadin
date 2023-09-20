@@ -36,6 +36,7 @@ public class ResourceTypeView extends VerticalLayout {
 
     //	private Grid<ZJTResourceType> grid = new Grid<>(ZJTResourceType.class);
     TuiGrid grid;
+    List<String> headers = List.of("Name", "Description");
     List<ZJTResourceType> listResourceType;
     List<Item> items = new ArrayList<>();
     TextField filterText = new TextField();
@@ -48,7 +49,7 @@ public class ResourceTypeView extends VerticalLayout {
     public ResourceTypeView(ResourceTypeService service) {
         this.service = service;
 
-        setSizeFull();
+//        setSizeFull();
 
         configureGrid();
         configureForm();
@@ -69,7 +70,6 @@ public class ResourceTypeView extends VerticalLayout {
         Comparator<ZJTResourceType> comparator = Comparator.comparing(item -> item.getName());
         Collections.sort(listResourceType, comparator);
 
-        List<String> headers = List.of("Name", "Description");
         try {
             for (ZJTResourceType zjtResourceType :
                     listResourceType) {
@@ -124,12 +124,12 @@ public class ResourceTypeView extends VerticalLayout {
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
 
-        Button addButton = new Button("Add");
-        addButton.addClickListener(click -> add());
-        Button removeContactButton = new Button("Delete");
-        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        removeContactButton.addClickListener(click -> delete());
-        var toolbar = new HorizontalLayout(filterText, addButton, removeContactButton);
+//        Button addButton = new Button("Add");
+//        addButton.addClickListener(click -> add());
+//        Button removeContactButton = new Button("Delete");
+//        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+//        removeContactButton.addClickListener(click -> delete());
+        var toolbar = new HorizontalLayout(filterText);
 
         toolbar.addClassName("toolbar");
 
@@ -140,11 +140,11 @@ public class ResourceTypeView extends VerticalLayout {
     private void configureGrid() {
         grid = new TuiGrid();
         grid.addClassName("scheduler-grid");
-
+        grid.setHeaders(headers);
         items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
-        grid.setRowHeaders(List.of("rowNum", "checkbox"));
+        grid.setRowHeaders(List.of("checkbox"));
 
         grid.addItemChangeListener(event -> {
             items = grid.getItems();
@@ -158,11 +158,11 @@ public class ResourceTypeView extends VerticalLayout {
             GuiItem item = (GuiItem) items.get(event.getRow());
             String colName = event.getColName();
             int index = item.getHeaders().indexOf(colName);
-            if (event.getRow() >= listResourceType.size()) {
+            if (event.getRow() >= listResourceType.size() - 1) {
                 ZJTResourceType zpt = new ZJTResourceType();
                 zpt.setName("");
                 zpt.setDescription("");
-                zpt.setResourceCategory(listResourceType.get(0).getResourceCategory());
+                zpt.setResourceCategory(service.getResourceCategories().get(0));
                 listResourceType.add(zpt);
             }
             ZJTResourceType row = listResourceType.get(event.getRow());
@@ -179,12 +179,14 @@ public class ResourceTypeView extends VerticalLayout {
                 service.save(row);
             });
         });
-
+        grid.addItemDeleteListener(listener -> {
+            delete();
+        });
         grid.setAutoSave(true);
         grid.setSizeFull();
         grid.setHeaderHeight(50);
         grid.setTableWidth(500);
-        grid.setTableHeight(750);
+//        grid.setTableHeight(750);
     }
 
     private void configureForm() {
@@ -215,7 +217,6 @@ public class ResourceTypeView extends VerticalLayout {
     private void add() {
 //		grid.asSingleSelect().clear();
 //        edit(new ZJTResourceType());
-        List<String> headers = List.of("Name", "Description");
         grid.addItem(List.of(new GuiItem(List.of("", ""), headers)));
         bAdd = true;
     }
@@ -241,12 +242,12 @@ public class ResourceTypeView extends VerticalLayout {
     }
 
     private void delete() {
-        if (grid.getCheckedItems().size() == 0)
+        if (grid.getCheckedItems().length == 0)
             return;
         for (int checkedRow :
                 grid.getCheckedItems()) {
             service.delete(listResourceType.get(checkedRow));
         }
-        grid.deleteItems(grid.getCheckedItems());
+        
     }
 }

@@ -32,6 +32,7 @@ public class ResourceCategoryView extends VerticalLayout {
 
     //	private Grid<ZJTResourceCategory> grid = new Grid<>(ZJTResourceCategory.class);
     TuiGrid grid;
+    List<String> headers = List.of("Name", "Description");
     List<ZJTResourceCategory> listResourceCategory;
     List<Item> items = new ArrayList<>();
     TextField filterText = new TextField();
@@ -43,7 +44,7 @@ public class ResourceCategoryView extends VerticalLayout {
     public ResourceCategoryView(ResourceCategoryService service) {
         this.service = service;
 
-        setSizeFull();
+//        setSizeFull();
 
         configureGrid();
         configureForm();
@@ -66,7 +67,6 @@ public class ResourceCategoryView extends VerticalLayout {
         Comparator<ZJTResourceCategory> comparator = Comparator.comparing(item -> item.getName());
         Collections.sort(listResourceCategory, comparator);
 
-        List<String> headers = List.of("Name", "Description");
         for (ZJTResourceCategory zjtResourceCategory :
                 listResourceCategory) {
             TableData.add(new GuiItem(
@@ -115,12 +115,12 @@ public class ResourceCategoryView extends VerticalLayout {
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
 
-        Button addContactButton = new Button("Add");
-        addContactButton.addClickListener(click -> add());
-        Button removeContactButton = new Button("Delete");
-        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        removeContactButton.addClickListener(click -> delete());
-        var toolbar = new HorizontalLayout(filterText, addContactButton, removeContactButton);
+//        Button addContactButton = new Button("Add");
+//        addContactButton.addClickListener(click -> add());
+//        Button removeContactButton = new Button("Delete");
+//        removeContactButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+//        removeContactButton.addClickListener(click -> delete());
+        var toolbar = new HorizontalLayout(filterText);
 
         toolbar.addClassName("toolbar");
 
@@ -129,14 +129,13 @@ public class ResourceCategoryView extends VerticalLayout {
 
 
     private void configureGrid() {
-
         grid = new TuiGrid();
         grid.addClassName("scheduler-grid");
-
+        grid.setHeaders(headers);
         items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
-        grid.setRowHeaders(List.of("rowNum", "checkbox"));
+        grid.setRowHeaders(List.of("checkbox"));
 
         grid.addItemChangeListener(event -> {
             items = grid.getItems();
@@ -151,7 +150,7 @@ public class ResourceCategoryView extends VerticalLayout {
             String colName = event.getColName();
 
             int index = item.getHeaders().indexOf(colName);
-            if (event.getRow() >= listResourceCategory.size()) {
+            if (event.getRow() >= listResourceCategory.size() - 1) {
                 ZJTResourceCategory zpt = new ZJTResourceCategory();
                 zpt.setName("");
                 zpt.setDescription("");
@@ -172,11 +171,14 @@ public class ResourceCategoryView extends VerticalLayout {
                 service.save(row);
             });
         });
-
+        grid.addItemDeleteListener(listener -> {
+            delete();
+        });
+        grid.setAutoSave(true);
         grid.setSizeFull();
         grid.setHeaderHeight(50);
         grid.setTableWidth(500);
-        grid.setTableHeight(750);
+//        grid.setTableHeight(750);
     }
 
     private void configureForm() {
@@ -207,7 +209,6 @@ public class ResourceCategoryView extends VerticalLayout {
     private void add() {
 //        grid.asSingleSelect().clear();
 //        edit(new ZJTResourceCategory());
-        List<String> headers = List.of("Name", "Description");
         grid.addItem(List.of(new GuiItem(List.of("", ""), headers)));
         bAdd = true;
     }
@@ -232,12 +233,12 @@ public class ResourceCategoryView extends VerticalLayout {
     }
 
     private void delete() {
-        if (grid.getCheckedItems().size() == 0)
+        if (grid.getCheckedItems().length == 0)
             return;
         for (int checkedRow :
                 grid.getCheckedItems()) {
             service.delete(listResourceCategory.get(checkedRow));
         }
-        grid.deleteItems(grid.getCheckedItems());
+        
     }
 }

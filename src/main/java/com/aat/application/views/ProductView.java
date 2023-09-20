@@ -144,7 +144,7 @@ public class ProductView extends VerticalLayout {
         List<Item> items = this.getTableData();
         grid.setItems(items);
         grid.setColumns(this.getColumns());
-        grid.setRowHeaders(List.of("rowNum", "checkbox"));
+        grid.setRowHeaders(List.of("checkbox"));
 
         grid.addItemChangeListener(event -> {
             GuiItem item = (GuiItem) items.get(event.getRow());
@@ -222,12 +222,12 @@ public class ProductView extends VerticalLayout {
     }
 
     private void delete() {
-        if (grid.getCheckedItems().size() == 0)
+        if (grid.getCheckedItems().length == 0)
             return;
         for (int checkedRow :
                 grid.getCheckedItems()) {
             service.delete(zjtProductList.get(checkedRow));
         }
-        grid.deleteItems(grid.getCheckedItems());
+        
     }
 }
