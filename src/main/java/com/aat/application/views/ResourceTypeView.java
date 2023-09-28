@@ -178,9 +178,9 @@ public class ResourceTypeView extends VerticalLayout {
                     break;
             }
             // Asynchronously save the modified row
-            CompletableFuture.runAsync(() -> {
+//            CompletableFuture.runAsync(() -> {
                 service.save(row);
-            });
+//            });
         });
         grid.addItemDeleteListener(listener -> {
             delete();
