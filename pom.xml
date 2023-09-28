@@ -112,7 +112,7 @@
         <dependency>
             <groupId>com.github.rosauromatib</groupId>
             <artifactId>toast-ui-grid-addon</artifactId>
-            <version>v1.1.5_g</version>
+            <version>v1.1.6_g</version>
         </dependency>
         <dependency>
             <groupId>com.github.rosauromatib</groupId>
