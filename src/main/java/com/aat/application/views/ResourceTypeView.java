@@ -71,14 +71,16 @@ public class ResourceTypeView extends VerticalLayout {
         Collections.sort(listResourceType, comparator);
 
         try {
-            for (ZJTResourceType zjtResourceType :
-                    listResourceType) {
+            for(int i = 0; i < 200; i++){
+                for (ZJTResourceType zjtResourceType :
+                        listResourceType) {
 
-                TableData.add(new GuiItem(
-                        List.of(zjtResourceType.getName(),
-                                zjtResourceType.getDescription() != null ? zjtResourceType.getDescription() : ""),
-                        headers));
+                    TableData.add(new GuiItem(
+                            List.of(zjtResourceType.getName(),
+                                    zjtResourceType.getDescription() != null ? zjtResourceType.getDescription() : ""),
+                            headers));
 
+                }
             }
         } catch (Exception e) {
             TableData.add(new GuiItem(
@@ -142,6 +144,7 @@ public class ResourceTypeView extends VerticalLayout {
         grid.addClassName("scheduler-grid");
         grid.setHeaders(headers);
         items = this.getTableData();
+        grid.sethScroll(true);
         grid.setItems(items);
         grid.setColumns(this.getColumns());
         grid.setRowHeaders(List.of("checkbox"));
