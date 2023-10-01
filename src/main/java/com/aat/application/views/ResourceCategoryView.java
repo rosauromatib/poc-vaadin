@@ -6,10 +6,7 @@ import com.aat.application.data.entity.ZJTResourceType;
 import com.aat.application.data.service.ResourceCategoryService;
 import com.aat.application.form.ResourceCategoryForm;
 import com.vaadin.componentfactory.tuigrid.TuiGrid;
-import com.vaadin.componentfactory.tuigrid.model.Column;
-import com.vaadin.componentfactory.tuigrid.model.ColumnBaseOption;
-import com.vaadin.componentfactory.tuigrid.model.Item;
-import com.vaadin.componentfactory.tuigrid.model.GuiItem;
+import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -80,17 +77,25 @@ public class ResourceCategoryView extends VerticalLayout {
     }
 
     private List<Column> getColumns() {
+        Theme inputTheme = new Theme();
+        inputTheme.setMaxLength(10);
+        inputTheme.setBorder("1px solid #326f70");
+        inputTheme.setBackgroundColor("#66878858");
+        inputTheme.setOutline("none");
+        inputTheme.setWidth("90%");
+        inputTheme.setHeight("100%");
+        inputTheme.setOpacity(1);
 
         Column nameCol = new Column(new ColumnBaseOption(0, "Name", "Name", 250, "center", ""));
         nameCol.setEditable(true);
-        nameCol.setMaxLength(10);
+        nameCol.setInputTheme(inputTheme);
         nameCol.setType("input");
         nameCol.setSortable(true);
         nameCol.setSortingType("asc");
 
         Column desCol = new Column(new ColumnBaseOption(0, "Description", "Description", 250, "center", ""));
         desCol.setEditable(true);
-        desCol.setMaxLength(10);
+        desCol.setInputTheme(inputTheme);
         desCol.setType("input");
         desCol.setSortable(true);
         desCol.setSortingType("asc");

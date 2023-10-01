@@ -78,9 +78,18 @@ public class TripElementView extends VerticalLayout {
     }
 
     private List<Column> getColumns() {
+        Theme inputTheme = new Theme();
+        inputTheme.setMaxLength(10);
+        inputTheme.setBorder("1px solid #326f70");
+        inputTheme.setBackgroundColor("#66878858");
+        inputTheme.setOutline("none");
+        inputTheme.setWidth("90%");
+        inputTheme.setHeight("100%");
+        inputTheme.setOpacity(1);
+
         Column nameCol = new Column(new ColumnBaseOption(0, "Name", "Name", 150, "center", ""));
         nameCol.setEditable(true);
-        nameCol.setMaxLength(10);
+        nameCol.setInputTheme(inputTheme);
         nameCol.setType("input");
         nameCol.setSortable(true);
         nameCol.setSortingType("asc");
