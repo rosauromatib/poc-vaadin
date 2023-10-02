@@ -37,6 +37,7 @@ public class PricingTypeView extends VerticalLayout {
 
     private final PricingTypeService service;
     private boolean bAdd = false;
+    Span sp = new Span("Here is: ");
 
     public PricingTypeView(PricingTypeService service) {
         this.service = service;
@@ -47,7 +48,7 @@ public class PricingTypeView extends VerticalLayout {
         configureForm();
         getContent();
 
-        add(getToolbar(), getContent());
+        add(sp, getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -79,26 +80,14 @@ public class PricingTypeView extends VerticalLayout {
     }
 
     private List<Column> getColumns() {
-
-        Theme inputTheme = new Theme();
-        inputTheme.setMaxLength(10);
-        inputTheme.setBorder("1px solid #326f70");
-        inputTheme.setBackgroundColor("#66878858");
-        inputTheme.setOutline("none");
-        inputTheme.setWidth("90%");
-        inputTheme.setHeight("100%");
-        inputTheme.setOpacity(1);
-
         Column nameCol = new Column(new ColumnBaseOption(0, "Name", "Name", 250, "center", ""));
         nameCol.setEditable(true);
-        nameCol.setInputTheme(inputTheme);
         nameCol.setType("input");
         nameCol.setSortable(true);
         nameCol.setSortingType("asc");
 
         Column desCol = new Column(new ColumnBaseOption(1, "Description", "Description", 250, "center", ""));
         desCol.setEditable(true);
-        desCol.setInputTheme(inputTheme);
         desCol.setType("input");
         desCol.setSortable(true);
         desCol.setSortingType("asc");
@@ -143,6 +132,17 @@ public class PricingTypeView extends VerticalLayout {
         grid.setColumns(this.getColumns());
         grid.setRowHeaders(List.of("checkbox"));
 
+        Theme inputTheme = new Theme();
+        inputTheme.setMaxLength(10);
+        inputTheme.setBorder("1px solid #326f70");
+        inputTheme.setBackgroundColor("#66878858");
+        inputTheme.setOutline("none");
+        inputTheme.setWidth("90%");
+        inputTheme.setHeight("100%");
+        inputTheme.setOpacity(1);
+
+        grid.setInputTheme(inputTheme);
+
         grid.addItemChangeListener(event -> {
             items = grid.getItems();
             if (!bAdd) {
@@ -154,7 +154,7 @@ public class PricingTypeView extends VerticalLayout {
             bAdd = false;
             GuiItem item = (GuiItem) items.get(event.getRow());
             String colName = event.getColName();
-
+sp.add("row" + event.getRow());
             int index = item.getHeaders().indexOf(colName);
             if (event.getRow() >= listPricingType.size() - 1) {
                 ZJTPricingType zpt = new ZJTPricingType();

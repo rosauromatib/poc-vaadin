@@ -16,10 +16,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @PageTitle("Trip Element")
@@ -32,7 +29,9 @@ public class TripElementView extends VerticalLayout {
     List<String> headers = List.of("Name", "Uom", "Elementlist", "Pricing Type");
     List<Item> items = new ArrayList<>();
     List<ZJTElement> elements;
+    Dictionary<String, Integer> pricingTypeDic = new Hashtable<>();
     TextField filterText = new TextField();
+    Span sp = new Span("Here is : ");
 
     private TripElementForm form;
     private final TripElementService service;
@@ -45,7 +44,7 @@ public class TripElementView extends VerticalLayout {
 
         configureGrid();
         configureForm();
-        add(getToolbar(), getContent());
+        add(sp, getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -62,14 +61,13 @@ public class TripElementView extends VerticalLayout {
         // Sort the TableData list using the custom comparator
         Collections.sort(elements, comparator);
 
-
         for (ZJTElement zjtElement :
                 elements) {
             TableData.add(new GuiItem(
                     List.of(zjtElement.getName(),
-                            zjtElement.getUom().toString(),
-                            zjtElement.getElementlist().toString(),
-                            String.valueOf(zjtElement.getPricingType().getZjt_pricingtype_id())),
+                            String.valueOf(zjtElement.getUom().ordinal() + 1),
+                            String.valueOf(zjtElement.getElementlist().ordinal() + 1),
+                            String.valueOf(pricingTypeDic.get(String.valueOf(zjtElement.getPricingType().getZjt_pricingtype_id())) + 1)),
                     headers));
 
         }
@@ -78,18 +76,9 @@ public class TripElementView extends VerticalLayout {
     }
 
     private List<Column> getColumns() {
-        Theme inputTheme = new Theme();
-        inputTheme.setMaxLength(10);
-        inputTheme.setBorder("1px solid #326f70");
-        inputTheme.setBackgroundColor("#66878858");
-        inputTheme.setOutline("none");
-        inputTheme.setWidth("90%");
-        inputTheme.setHeight("100%");
-        inputTheme.setOpacity(1);
 
         Column nameCol = new Column(new ColumnBaseOption(0, "Name", "Name", 150, "center", ""));
         nameCol.setEditable(true);
-        nameCol.setInputTheme(inputTheme);
         nameCol.setType("input");
         nameCol.setSortable(true);
         nameCol.setSortingType("asc");
@@ -103,15 +92,16 @@ public class TripElementView extends VerticalLayout {
         uomCol.setSortable(true);
         uomCol.setSortingType("asc");
         List<RelationOption> uomList = new ArrayList<>();
+        int index = 1;
         for (Uom uom : Uom.values()) {
-            RelationOption option = new RelationOption(uom.toString(), uom.toString());
+            RelationOption option = new RelationOption(uom.toString(), String.valueOf(index++));
             uomList.add(option);
         }
 
         uomCol.setRelationOptions(uomList);
 
         Column elementlistCol = new Column(new ColumnBaseOption(2, "Elementlist", "Elementlist", 150, "center", ""));
-        elementlistCol.setEditable(false);
+        elementlistCol.setEditable(true);
         elementlistCol.setMaxLength(10);
         elementlistCol.setType("select");
         elementlistCol.setRoot(true);
@@ -119,8 +109,9 @@ public class TripElementView extends VerticalLayout {
         elementlistCol.setSortable(true);
         elementlistCol.setSortingType("asc");
         List<RelationOption> elementsList = new ArrayList<>();
+        index = 1;
         for (ElementList elementList : ElementList.values()) {
-            RelationOption option = new RelationOption(elementList.toString(), elementList.toString());
+            RelationOption option = new RelationOption(elementList.toString(), String.valueOf(index++));
             elementsList.add(option);
         }
 
@@ -136,15 +127,18 @@ public class TripElementView extends VerticalLayout {
         pricingTypeCol.setSortingType("asc");
         List<ZJTPricingType> pricingTypes = service.getPricingTypes();
         List<RelationOption> combPricingTypes = new ArrayList<>();
+        index = 1;
         for (ZJTPricingType pricingType :
                 pricingTypes) {
-            RelationOption option = new RelationOption(pricingType.getName(), String.valueOf(pricingType.getZjt_pricingtype_id()));
+            pricingTypeDic.put(String.valueOf(pricingType.getZjt_pricingtype_id()), index);
+            RelationOption option = new RelationOption(pricingType.getName(), String.valueOf(index++));
             combPricingTypes.add(option);
         }
 
         pricingTypeCol.setRelationOptions(combPricingTypes);
 
         List<Column> columns = List.of(nameCol, uomCol, elementlistCol, pricingTypeCol);
+
         return columns;
     }
 
@@ -181,10 +175,22 @@ public class TripElementView extends VerticalLayout {
         grid.addClassName("scheduler-grid");
 
         grid.setHeaders(headers);
+        grid.setColumns(this.getColumns());
         items = this.getTableData();
         grid.setItems(items);
-        grid.setColumns(this.getColumns());
         grid.setRowHeaders(List.of("checkbox"));
+
+        Theme inputTheme = new Theme();
+        inputTheme.setMaxLength(10);
+        inputTheme.setBorder("1px solid #326f70");
+        inputTheme.setBackgroundColor("#66878858");
+        inputTheme.setOutline("none");
+        inputTheme.setWidth("90%");
+        inputTheme.setHeight("100%");
+        inputTheme.setOpacity(1);
+
+        grid.setInputTheme(inputTheme);
+        grid.setSelectTheme(inputTheme);
 
         grid.addItemChangeListener(event -> {
 

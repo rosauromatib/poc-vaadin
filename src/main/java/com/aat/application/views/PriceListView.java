@@ -133,6 +133,17 @@ public class PriceListView extends VerticalLayout {
         grid.setSizeFull();
         grid.setHeaderHeight(100);
         grid.setTableWidth(750);
+
+        Theme inputTheme = new Theme();
+        inputTheme.setMaxLength(10);
+        inputTheme.setBorder("1px solid #326f70");
+        inputTheme.setBackgroundColor("#66878858");
+        inputTheme.setOutline("none");
+        inputTheme.setWidth("90%");
+        inputTheme.setHeight("100%");
+        inputTheme.setOpacity(1);
+
+        grid.setInputTheme(inputTheme);
 //		grid.setTableHeight(750);
 //		Editor<PriceListRow> editor = grid.getEditor();
 //		editor.setBinder(binder);

@@ -1,6 +1,9 @@
 vaadin-scroller[slot="drawer"] {
   padding: var(--lumo-space-s);
 }
+#drawer {
+  background-color: #66878840;
+}
 
 [slot="drawer"]:is(header, footer) {
   display: flex;

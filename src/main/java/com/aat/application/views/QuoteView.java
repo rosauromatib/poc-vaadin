@@ -16,10 +16,7 @@ import com.aat.application.data.entity.ZJTProduct;
 import com.aat.application.data.service.PricelistService;
 import com.aat.application.data.service.QuoteService;
 import com.vaadin.componentfactory.tuigrid.TuiGrid;
-import com.vaadin.componentfactory.tuigrid.model.Column;
-import com.vaadin.componentfactory.tuigrid.model.ColumnBaseOption;
-import com.vaadin.componentfactory.tuigrid.model.GuiItem;
-import com.vaadin.componentfactory.tuigrid.model.Item;
+import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.button.Button;
@@ -152,6 +149,17 @@ public class QuoteView extends VerticalLayout {
         grid.setColumns(this.getColumns());
         grid.addClassName("scheduler-grid");
         grid.setSizeFull();
+
+        Theme inputTheme = new Theme();
+        inputTheme.setMaxLength(10);
+        inputTheme.setBorder("1px solid #326f70");
+        inputTheme.setBackgroundColor("#66878858");
+        inputTheme.setOutline("none");
+        inputTheme.setWidth("90%");
+        inputTheme.setHeight("100%");
+        inputTheme.setOpacity(1);
+
+        grid.setInputTheme(inputTheme);
 //        Editor<PriceListRow> editor = grid.getEditor();
 //        editor.setBinder(binder);
 //        editor.setBuffered(false);

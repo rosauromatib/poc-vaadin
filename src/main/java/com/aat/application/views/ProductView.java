@@ -146,6 +146,17 @@ public class ProductView extends VerticalLayout {
         grid.setColumns(this.getColumns());
         grid.setRowHeaders(List.of("checkbox"));
 
+        Theme inputTheme = new Theme();
+        inputTheme.setMaxLength(10);
+        inputTheme.setBorder("1px solid #326f70");
+        inputTheme.setBackgroundColor("#66878858");
+        inputTheme.setOutline("none");
+        inputTheme.setWidth("90%");
+        inputTheme.setHeight("100%");
+        inputTheme.setOpacity(1);
+
+        grid.setInputTheme(inputTheme);
+
         grid.addItemChangeListener(event -> {
             GuiItem item = (GuiItem) items.get(event.getRow());
             String colName = event.getColName();
