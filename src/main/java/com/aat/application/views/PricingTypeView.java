@@ -144,6 +144,8 @@ public class PricingTypeView extends VerticalLayout {
         grid.setInputTheme(inputTheme);
 
         grid.addItemChangeListener(event -> {
+
+
             items = grid.getItems();
             if (!bAdd) {
                 if (filterText != null)
@@ -152,9 +154,12 @@ public class PricingTypeView extends VerticalLayout {
                     listPricingType = service.findAll(null);
             }
             bAdd = false;
+
+            Comparator<ZJTPricingType> comparator = Comparator.comparing(item -> item.getName());
+            Collections.sort(listPricingType, comparator);
+
             GuiItem item = (GuiItem) items.get(event.getRow());
             String colName = event.getColName();
-sp.add("row" + event.getRow());
             int index = item.getHeaders().indexOf(colName);
             if (event.getRow() >= listPricingType.size() - 1) {
                 ZJTPricingType zpt = new ZJTPricingType();
@@ -164,6 +169,8 @@ sp.add("row" + event.getRow());
             }
             ZJTPricingType row = listPricingType.get(event.getRow());
 
+            sp.add(" row1: " + row.getName());
+            sp.add(" row2: " + event.getColValue());
             switch (index) {
                 case 0:
                     row.setName(event.getColValue());
