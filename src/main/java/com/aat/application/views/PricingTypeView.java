@@ -169,8 +169,6 @@ public class PricingTypeView extends VerticalLayout {
             }
             ZJTPricingType row = listPricingType.get(event.getRow());
 
-            sp.add(" row1: " + row.getName());
-            sp.add(" row2: " + event.getColValue());
             switch (index) {
                 case 0:
                     row.setName(event.getColValue());

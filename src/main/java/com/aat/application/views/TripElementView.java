@@ -63,11 +63,12 @@ public class TripElementView extends VerticalLayout {
 
         for (ZJTElement zjtElement :
                 elements) {
+            sp.add(" price: " + pricingTypeDic.get(String.valueOf(zjtElement.getPricingType().getZjt_pricingtype_id())));
             TableData.add(new GuiItem(
                     List.of(zjtElement.getName(),
                             String.valueOf(zjtElement.getUom().ordinal() + 1),
                             String.valueOf(zjtElement.getElementlist().ordinal() + 1),
-                            String.valueOf(pricingTypeDic.get(String.valueOf(zjtElement.getPricingType().getZjt_pricingtype_id())) + 1)),
+                            String.valueOf(pricingTypeDic.get(String.valueOf(zjtElement.getPricingType().getZjt_pricingtype_id())))),
                     headers));
 
         }
