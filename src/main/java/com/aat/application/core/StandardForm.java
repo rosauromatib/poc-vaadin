@@ -1,6 +1,5 @@
-package com.aat.application.core;
+package com.aat.application.form;
 
-import com.aat.application.data.entity.ZJTPricingType;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
@@ -13,102 +12,82 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 
-public class StandardForm extends FormLayout {
+public abstract class StandardForm<T> extends FormLayout {
 
 	private static final long serialVersionUID = -5183438338263448739L;
 
-	Binder<ZJTPricingType> binder = new BeanValidationBinder<>(ZJTPricingType.class);
+	protected Binder<T> binder;
+	protected TextField name;
+	protected TextField description;
+	protected Button save;
+	protected Button close;
 
-	TextField name = new TextField("Name");
-	TextField description = new TextField("Description");
-
-	Button save = new Button("Save");
-//	Button delete = new Button("Delete");
-	Button close = new Button("Cancel");
-
-	public StandardForm()
-	{
+	public StandardForm(Class<T> entityClass) {
 		addClassName("demo-app-form");
-		
+
+		binder = new BeanValidationBinder<>(entityClass);
+		name = new TextField("Name");
+		description = new TextField("Description");
+		save = new Button("Save");
+		close = new Button("Cancel");
+
 		add(name, description, createButtonsLayout());
 		binder.bindInstanceFields(this);
 	}
-	  
+
 	private HorizontalLayout createButtonsLayout() {
 		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-//		delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
 		close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-
 		save.addClickShortcut(Key.ENTER);
-
 		close.addClickShortcut(Key.ESCAPE);
 
 		save.addClickListener(event -> validateAndSave());
-//		delete.addClickListener(event -> fireEvent(new DeleteEvent(this, binder.getBean())));
 		close.addClickListener(event -> fireEvent(new CloseEvent(this)));
-//		return new HorizontalLayout(save, delete, close);
-		return new HorizontalLayout(save, close);
 
+		return new HorizontalLayout(save, close);
 	}
-	
+
 	private void validateAndSave() {
 		if (binder.isValid()) {
-			fireEvent(new SaveEvent(this,  binder.getBean()));
+			fireEvent(new SaveEvent(this, binder.getBean()));
 		}
 	}
 
-	public void setBean(ZJTPricingType bean)
-	{
+	public void setBean(T bean) {
 		binder.setBean(bean);
 	}
-	
+
 	// Events
-	public static abstract class PricingTypeFormEvent extends ComponentEvent<StandardForm> {
-	  private final ZJTPricingType bean;
+	public static abstract class StandardFormEvent<T> extends ComponentEvent<StandardForm<T>> {
+		private final T bean;
 
-	  protected PricingTypeFormEvent(StandardForm source, ZJTPricingType bean) {
+		protected StandardFormEvent(StandardForm<T> source, T bean) {
+			super(source, false);
+			this.bean = bean;
+		}
 
-
-	    super(source, false);
-	    this.bean = bean;
-	  }
-
-	  public ZJTPricingType getBean() {
-	    return bean;
-	  }
+		public T getBean() {
+			return bean;
+		}
 	}
 
-	public static class SaveEvent extends PricingTypeFormEvent {
-	  SaveEvent(StandardForm source, ZJTPricingType bean) {
-	    super(source, bean);
-	  }
+	public static class SaveEvent<T> extends StandardFormEvent<T> {
+		SaveEvent(StandardForm<T> source, T bean) {
+			super(source, bean);
+		}
 	}
 
-	public static class DeleteEvent extends PricingTypeFormEvent {
-	  DeleteEvent(StandardForm source, ZJTPricingType bean) {
-	    super(source, bean);
-	  }
-
+	public static class CloseEvent<T> extends StandardFormEvent<T> {
+		CloseEvent(StandardForm<T> source) {
+			super(source, null);
+		}
 	}
 
-	public static class CloseEvent extends PricingTypeFormEvent {
-	  CloseEvent(StandardForm source) {
-	    super(source, null);
-	  }
+	public Registration addSaveListener(ComponentEventListener<SaveEvent<T>> listener) {
+		return addListener(SaveEvent.class, (ComponentEventListener) listener);
 	}
 
-	public Registration addDeleteListener(ComponentEventListener<DeleteEvent> listener) { 
-	  return addListener(DeleteEvent.class, listener);
-	}
-
-	public Registration addSaveListener(ComponentEventListener<SaveEvent> listener) {
-	  return addListener(SaveEvent.class, listener);
-	}
-	
-	public Registration addCloseListener(ComponentEventListener<CloseEvent> listener) {
-	  return addListener(CloseEvent.class, listener);
+	public Registration addCloseListener(ComponentEventListener<CloseEvent<T>> listener) {
+		return addListener(CloseEvent.class, (ComponentEventListener) listener);
 	}
 }
-
-
