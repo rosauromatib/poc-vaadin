@@ -63,7 +63,6 @@ public class TripElementView extends VerticalLayout {
 
         for (ZJTElement zjtElement :
                 elements) {
-            sp.add(" price: " + pricingTypeDic.get(String.valueOf(zjtElement.getPricingType().getZjt_pricingtype_id())));
             TableData.add(new GuiItem(
                     List.of(zjtElement.getName(),
                             String.valueOf(zjtElement.getUom().ordinal() + 1),
@@ -216,25 +215,41 @@ public class TripElementView extends VerticalLayout {
                 elements.add(zpt);
             }
             ZJTElement row = elements.get(event.getRow());
+            sp.add(" row1: " + row.getName());
+            sp.add(" row2: " + row.getUom());
+            sp.add(" row3: " + row.getElementlist());
+            sp.add(" row4: " + row.getPricingType());
+            sp.add(" index: " + index);
+            sp.add(" Uom: " + event.getColValue());
+            //pricingTypeDic.get(String.valueOf(zjtElement.getPricingType().getZjt_pricingtype_id()))
 
             switch (index) {
                 case 0:
                     row.setName(event.getColValue());
                     break;
                 case 1:
-                    row.setUom(Uom.valueOf(event.getColValue().substring(0, 1)));
+                    row.setUom(Uom.values()[Integer.parseInt(event.getColValue().substring(0, 1)) - 1]);
                     break;
                 case 2:
-                    for (ElementList enumValue : ElementList.values()) {
-                        if (enumValue.toString().equals(event.getColValue())) {
-                            row.setElementlist(enumValue);
+                    row.setElementlist(ElementList.values()[Integer.parseInt(event.getColValue().substring(0, 1)) - 1]);
+                    break;
+                case 3:
+                    Enumeration<Integer> values = pricingTypeDic.elements();
+                    Enumeration<String> keys = pricingTypeDic.keys();
+                    String key = null;
+
+                    ZJTPricingType pricingType = row.getPricingType();
+
+                    while (values.hasMoreElements()) {
+                        Integer value = values.nextElement();
+                        String currentKey = keys.nextElement();
+
+                        if (value.equals(Integer.parseInt(event.getColValue()))) {
+                            key = currentKey;
                             break;
                         }
                     }
-                    break;
-                case 3:
-                    ZJTPricingType pricingType = row.getPricingType();
-                    pricingType.setZjt_pricingtype_id(Integer.parseInt(event.getColValue()));
+                    pricingType.setZjt_pricingtype_id(Integer.parseInt(key));
                     row.setPricingType(pricingType);
                     break;
             }
