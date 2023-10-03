@@ -215,14 +215,6 @@ public class TripElementView extends VerticalLayout {
                 elements.add(zpt);
             }
             ZJTElement row = elements.get(event.getRow());
-            sp.add(" row1: " + row.getName());
-            sp.add(" row2: " + row.getUom());
-            sp.add(" row3: " + row.getElementlist());
-            sp.add(" row4: " + row.getPricingType());
-            sp.add(" index: " + index);
-            sp.add(" Uom: " + event.getColValue());
-            //pricingTypeDic.get(String.valueOf(zjtElement.getPricingType().getZjt_pricingtype_id()))
-
             switch (index) {
                 case 0:
                     row.setName(event.getColValue());
