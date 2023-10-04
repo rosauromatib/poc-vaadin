@@ -2,13 +2,14 @@ package com.aat.application.data.service;
 
 import java.util.List;
 
+import com.aat.application.core.ZJTService;
 import org.springframework.stereotype.Service;
 
 import com.aat.application.data.entity.ZJTPricingType;
 import com.aat.application.data.repository.PricingTypeRepository;
 
 @Service
-public class PricingTypeService {
+public class PricingTypeService implements ZJTService<ZJTPricingType> {
 
 	public PricingTypeService(PricingTypeRepository repository) {
 		this.repository = repository;
