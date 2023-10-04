@@ -15,7 +15,6 @@ public class PricingTypeView extends VerticalLayout {
 
     public PricingTypeView(PricingTypeService service) {
         this.service = service;
-
         configureForm();
         add(form);
     }
@@ -23,6 +22,5 @@ public class PricingTypeView extends VerticalLayout {
     private void configureForm() {
         form = new PricingTypeForm(service);
         form.setWidth("25em");
-
     }
 }

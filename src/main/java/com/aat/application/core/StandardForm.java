@@ -1,5 +1,6 @@
 package com.aat.application.core;
 
+import com.aat.application.data.entity.ElementList;
 import com.vaadin.componentfactory.tuigrid.TuiGrid;
 import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.ComponentEvent;
@@ -32,9 +33,12 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
     protected Button close;
     protected TuiGrid grid;
     protected S service;
-    List<String> headers = new ArrayList<>();
+    List<String> headers;
+    Dictionary<String, String> headerOptions = new Hashtable<>();
+    Dictionary<String, Class<?>> headerTypeOptions = new Hashtable<>();
     List<Item> items = new ArrayList<>();
     List<T> tableData = new ArrayList<>();
+    Span sp = new Span("Here is : ");
 
     public StandardForm(Class<T> entityClass, S service) {
         addClassName("demo-app-form");
@@ -47,7 +51,7 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         headers = configureHeader(entityClass);
         configureGrid(entityClass);
 
-        add(getToolbar(entityClass), grid);
+        add(sp, getToolbar(entityClass), grid);
 
 //        binder.bindInstanceFields(this);
     }
@@ -58,7 +62,18 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         List<String> fieldNames = new ArrayList<>();
         for (int i = 1; i < fields.length; i++) {
             if (fields[i].getAnnotation(jakarta.persistence.Column.class) != null) {
+
                 fieldNames.add(fields[i].getName());
+                headerOptions.put(fields[i].getName(), "input");
+            }
+            if (fields[i].getAnnotation(jakarta.persistence.Enumerated.class) != null) {
+                fieldNames.add(fields[i].getName());
+                headerTypeOptions.put(fields[i].getName(), fields[i].getType());
+                headerOptions.put(fields[i].getName(), "select_enum");
+            }
+            if (fields[i].getAnnotation(jakarta.persistence.JoinColumn.class) != null) {
+                fieldNames.add(fields[i].getName());
+                headerOptions.put(fields[i].getName(), "select_class");
             }
         }
 
@@ -84,6 +99,7 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         inputTheme.setOpacity(1);
 
         grid.setInputTheme(inputTheme);
+        grid.setSelectTheme(inputTheme);
 
         grid.addItemChangeListener(event -> {
             items = grid.getItems();
@@ -98,7 +114,7 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
             GuiItem item = (GuiItem) items.get(event.getRow());
             String colName = event.getColName();
             int columnIndex = item.getHeaders().indexOf(colName);
-            if (event.getRow() >= tableData.size() - 1) {
+            if (event.getRow() >= tableData.size()) {
                 try {
                     tableData.add(entityClass.getDeclaredConstructor().newInstance());
                 } catch (InstantiationException e) {
@@ -117,11 +133,31 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
                 try {
                     Field field = entityClass.getDeclaredField(propertyName);
                     field.setAccessible(true);
-                    field.set(row, event.getColValue());
+                    switch (headerOptions.get(propertyName)) {
+                        case "input":
+                            field.set(row, event.getColValue());
+                            break;
+                        case "select_enum":
+                            Class<?> enumTypes = headerTypeOptions.get(propertyName);
+                            if (enumTypes.isEnum()) {
+                                Enum<?>[] enumConstants = ((Class<Enum<?>>) enumTypes).getEnumConstants();
+                                int ordinal = Integer.parseInt(event.getColValue().substring(0, 1)) - 1;
+                                if (ordinal >= 0 && ordinal < enumConstants.length) {
+                                    Enum<?> enumValue = enumConstants[ordinal];
+                                    field.set(row, enumValue);
+                                }
+                            }
+                            break;
+                        default:
+                            field.set(row, event.getColValue());
+                            break;
+                    }
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             }
+            sp.add(" it's " + row);
+
             // Asynchronously save the modified row
             CompletableFuture.runAsync(() -> {
                 service.save(row);
@@ -146,10 +182,7 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         else
             tableData = service.findAll(null);
 
-        // Define a custom comparator to sort by the "No" column
         Comparator<T> comparator = Comparator.comparing(item -> item.getName());
-
-        // Sort the TableData list using the custom comparator
         Collections.sort(tableData, comparator);
 
         for (T data :
@@ -158,9 +191,22 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
             for (int i = 0; i < headers.size(); i++) {
                 String header = headers.get(i);
                 try {
-                    Field headerField = entityClass.getDeclaredField(header.toLowerCase());
+                    String headerName = header.substring(0, 1).toLowerCase()
+                            + header.substring(1);
+                    Field headerField = entityClass.getDeclaredField(headerName);
                     headerField.setAccessible(true);
-                    rowData.set(i, String.valueOf(headerField.get(data)));
+                    switch (headerOptions.get(header)) {
+                        case "input":
+                            rowData.set(i, String.valueOf(headerField.get(data)));
+                            break;
+                        case "select_enum":
+                            rowData.set(i, String.valueOf(((Enum) headerField.get(data)).ordinal() + 1));
+                            break;
+                        default:
+                            rowData.set(i, "");
+                            break;
+                    }
+
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -177,15 +223,33 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         List<com.vaadin.componentfactory.tuigrid.model.Column> columns = new ArrayList<>();
         int nId = 0;
 
-        for (String header :
-                headers) {
+        Enumeration<String> e = headerOptions.keys();
+        while (e.hasMoreElements()) {
+            String header = e.nextElement();
             String headerName = header.substring(0, 1).toUpperCase()
                     + header.substring(1);
-            com.vaadin.componentfactory.tuigrid.model.Column column = new com.vaadin.componentfactory.tuigrid.model.Column(new ColumnBaseOption(nId++, headerName, header.toLowerCase(), 250, "center", ""));
+            ColumnBaseOption baseOption =
+                    new ColumnBaseOption(nId++, headerName, header, 250, "center", "");
+            com.vaadin.componentfactory.tuigrid.model.Column column =
+                    new com.vaadin.componentfactory.tuigrid.model.Column(baseOption);
             column.setEditable(true);
-            column.setType("input");
             column.setSortable(true);
             column.setSortingType("asc");
+//            if (headerOptions.get(header) == "input")
+                column.setType("input");
+            if (headerOptions.get(header) == "select_enum") {
+                column.setType("select");
+                column.setRoot(true);
+                column.setTarget("");
+                List<RelationOption> elementsList = new ArrayList<>();
+                Class<?> fieldEnum = headerTypeOptions.get(header);
+                int index = 1;
+                for (Enum elementList : ((Class<Enum>) fieldEnum).getEnumConstants()) {
+                    RelationOption option = new RelationOption(elementList.toString(), String.valueOf(index++));
+                    elementsList.add(option);
+                }
+                column.setRelationOptions(elementsList);
+            }
             columns.add(column);
         }
 

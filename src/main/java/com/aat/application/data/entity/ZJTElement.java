@@ -1,5 +1,6 @@
 package com.aat.application.data.entity;
 
+import com.aat.application.core.ZJTEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -9,16 +10,17 @@ import java.util.List;
 
 @Entity
 @Table(name="zjt_element")
-public class ZJTElement implements ZJTPo {
+public class ZJTElement implements ZJTPo, ZJTEntity {
 
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@Column(name = "zjt_element_id")
 	private int zjt_element_id;
 	
 	@Column
 	@NotEmpty
-	private String name;
+	private String name = "";
 
 	@ManyToOne
 	@JoinColumn(name="zjt_pricingtype_id", referencedColumnName = "zjt_pricingtype_id")

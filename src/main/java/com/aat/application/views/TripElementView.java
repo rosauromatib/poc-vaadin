@@ -42,20 +42,20 @@ public class TripElementView extends VerticalLayout {
 
 //        setSizeFull();
 
-        configureGrid();
+//        configureGrid();
         configureForm();
-        add(sp, getToolbar(), getContent());
-        updateList();
-        closeEditor();
+        add(form);
+//        add(sp, getToolbar(), getContent());
+//        updateList();
     }
 
     private List<Item> getTableData() {
 
         List<Item> TableData = new ArrayList<>();
         if (filterText != null)
-            elements = service.findAllElements(filterText.getValue());
+            elements = service.findAll(filterText.getValue());
         else
-            elements = service.findAllElements(null);
+            elements = service.findAll(null);
 //        Define a custom comparator to sort by the "No" column
         Comparator<ZJTElement> comparator = Comparator.comparing(item -> (item.getName()));
         // Sort the TableData list using the custom comparator
@@ -197,7 +197,7 @@ public class TripElementView extends VerticalLayout {
             items = grid.getItems();
             if (!bAdd) {
                 if (filterText != null)
-                    elements = service.findAllElements(filterText.getValue());
+                    elements = service.findAll(filterText.getValue());
                 else
                     elements = service.findAll();
             }
@@ -263,12 +263,9 @@ public class TripElementView extends VerticalLayout {
     }
 
     private void configureForm() {
-        form = new TripElementForm(service.getPricingTypes());
+        form = new TripElementForm(service);
         form.setWidth("25em");
 
-        form.addSaveListener(this::save);
-        form.addDeleteListener(this::delete);
-        form.addCloseListener(e -> closeEditor());
     }
 
     private void updateList() {
@@ -278,41 +275,11 @@ public class TripElementView extends VerticalLayout {
 
     }
 
-    public void edit(ZJTElement po) {
-        if (po == null) {
-            closeEditor();
-        } else {
-            form.setBean(po);
-            form.setVisible(true);
-            addClassName("editing");
-        }
-    }
-
     private void add() {
 //        grid.asSingleSelect().clear();
 //        edit(new ZJTElement());
         grid.addItem(List.of(new GuiItem(List.of("", "", "", ""), headers)));
         bAdd = true;
-    }
-
-
-    private void closeEditor() {
-        form.setBean(null);
-        form.setVisible(false);
-        removeClassName("editing");
-
-    }
-
-    private void save(TripElementForm.SaveEvent event) {
-        service.save(event.getBean());
-        updateList();
-        closeEditor();
-    }
-
-    private void delete(TripElementForm.DeleteEvent event) {
-        service.delete(event.getBean());
-        updateList();
-        closeEditor();
     }
 
     private void delete() {
