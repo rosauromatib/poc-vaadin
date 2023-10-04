@@ -1,5 +1,6 @@
 package com.aat.application.data.entity;
 
+import com.aat.application.core.ZJTEntity;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotEmpty;
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name="zjt_resourcetype")
-public class ZJTResourceType implements ZJTPo {
+public class ZJTResourceType implements ZJTPo, ZJTEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)

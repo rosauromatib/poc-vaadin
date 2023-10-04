@@ -8,6 +8,7 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -17,6 +18,7 @@ import com.vaadin.flow.shared.Registration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import javax.persistence.Column;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,8 +27,6 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
     private static final long serialVersionUID = -5183438338263448739L;
 
     protected Binder<T> binder;
-    protected TextField name;
-    protected TextField description;
     protected TextField filterText = new TextField();
     protected Button save;
     protected Button close;
@@ -41,8 +41,6 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         this.service = service;
 
         binder = new BeanValidationBinder<>(entityClass);
-        name = new TextField("Name");
-        description = new TextField("Description");
         save = new Button("Save");
         close = new Button("Cancel");
 
@@ -51,20 +49,19 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
 
         add(getToolbar(entityClass), grid);
 
-//		add(name, description, createButtonsLayout());
-        binder.bindInstanceFields(this);
-
+//        binder.bindInstanceFields(this);
     }
 
     private List<String> configureHeader(Class<T> entityClass) {
         Field[] fields = entityClass.getDeclaredFields();
 
         List<String> fieldNames = new ArrayList<>();
-        for (int i = 0; i < fields.length; i++) {
-            if (i != 0) {
+        for (int i = 1; i < fields.length; i++) {
+            if (fields[i].getAnnotation(jakarta.persistence.Column.class) != null) {
                 fieldNames.add(fields[i].getName());
             }
         }
+
         return fieldNames;
     }
 
@@ -161,7 +158,7 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
             for (int i = 0; i < headers.size(); i++) {
                 String header = headers.get(i);
                 try {
-                    Field headerField = entityClass.getDeclaredField(header);
+                    Field headerField = entityClass.getDeclaredField(header.toLowerCase());
                     headerField.setAccessible(true);
                     rowData.set(i, String.valueOf(headerField.get(data)));
                 } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -176,20 +173,23 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         return TableData;
     }
 
-    private List<Column> getColumns() {
-        Column nameCol = new Column(new ColumnBaseOption(0, "Name", "name", 250, "center", ""));
-        nameCol.setEditable(true);
-        nameCol.setType("input");
-        nameCol.setSortable(true);
-        nameCol.setSortingType("asc");
+    private List<com.vaadin.componentfactory.tuigrid.model.Column> getColumns() {
+        List<com.vaadin.componentfactory.tuigrid.model.Column> columns = new ArrayList<>();
+        int nId = 0;
 
-        Column desCol = new Column(new ColumnBaseOption(1, "Description", "description", 250, "center", ""));
-        desCol.setEditable(true);
-        desCol.setType("input");
-        desCol.setSortable(true);
-        desCol.setSortingType("asc");
+        for (String header :
+                headers) {
+            String headerName = header.substring(0, 1).toUpperCase()
+                    + header.substring(1);
+            com.vaadin.componentfactory.tuigrid.model.Column column = new com.vaadin.componentfactory.tuigrid.model.Column(new ColumnBaseOption(nId++, headerName, header.toLowerCase(), 250, "center", ""));
+            column.setEditable(true);
+            column.setType("input");
+            column.setSortable(true);
+            column.setSortingType("asc");
+            columns.add(column);
+        }
 
-        List<Column> columns = List.of(nameCol, desCol);
+//        List<Column> columns = List.of(nameCol, desCol);
         return columns;
     }
 
@@ -217,21 +217,21 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         save.addClickShortcut(Key.ENTER);
         close.addClickShortcut(Key.ESCAPE);
 
-        save.addClickListener(event -> validateAndSave());
-        close.addClickListener(event -> fireEvent(new CloseEvent(this)));
+//        save.addClickListener(event -> validateAndSave());
+//        close.addClickListener(event -> fireEvent(new CloseEvent(this)));
 
         return new HorizontalLayout(save, close);
     }
 
-    private void validateAndSave() {
-        if (binder.isValid()) {
-            fireEvent(new SaveEvent(this, binder.getBean()));
-        }
-    }
-
-    public void setBean(T bean) {
-        binder.setBean(bean);
-    }
+//    private void validateAndSave() {
+//        if (binder.isValid()) {
+//            fireEvent(new SaveEvent(this, binder.getBean()));
+//        }
+//    }
+//
+//    public void setBean(T bean) {
+//        binder.setBean(bean);
+//    }
 
     private void delete() {
         if (grid.getCheckedItems().length == 0)
@@ -241,38 +241,38 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
             service.delete(tableData.get(checkedRow));
         }
     }
-
-    // Events
-    public static abstract class StandardFormEvent<T extends ZJTEntity, S extends ZJTService<T>> extends ComponentEvent<StandardForm<T, S>> {
-        private final T bean;
-
-        protected StandardFormEvent(StandardForm<T, S> source, T bean) {
-            super(source, false);
-            this.bean = bean;
-        }
-
-        public T getBean() {
-            return bean;
-        }
-    }
-
-    public static class SaveEvent<T extends ZJTEntity, S extends ZJTService<T>> extends StandardFormEvent<T, S> {
-        SaveEvent(StandardForm<T, S> source, T bean) {
-            super(source, bean);
-        }
-    }
-
-    public static class CloseEvent<T extends ZJTEntity, S extends ZJTService<T>> extends StandardFormEvent<T, S> {
-        CloseEvent(StandardForm<T, S> source) {
-            super(source, null);
-        }
-    }
-
-    public Registration addSaveListener(ComponentEventListener<SaveEvent<T, S>> listener) {
-        return addListener(SaveEvent.class, (ComponentEventListener) listener);
-    }
-
-    public Registration addCloseListener(ComponentEventListener<CloseEvent<T, S>> listener) {
-        return addListener(CloseEvent.class, (ComponentEventListener) listener);
-    }
+//
+//    // Events
+//    public static abstract class StandardFormEvent<T extends ZJTEntity, S extends ZJTService<T>> extends ComponentEvent<StandardForm<T, S>> {
+//        private final T bean;
+//
+//        protected StandardFormEvent(StandardForm<T, S> source, T bean) {
+//            super(source, false);
+//            this.bean = bean;
+//        }
+//
+//        public T getBean() {
+//            return bean;
+//        }
+//    }
+//
+//    public static class SaveEvent<T extends ZJTEntity, S extends ZJTService<T>> extends StandardFormEvent<T, S> {
+//        SaveEvent(StandardForm<T, S> source, T bean) {
+//            super(source, bean);
+//        }
+//    }
+//
+//    public static class CloseEvent<T extends ZJTEntity, S extends ZJTService<T>> extends StandardFormEvent<T, S> {
+//        CloseEvent(StandardForm<T, S> source) {
+//            super(source, null);
+//        }
+//    }
+//
+//    public Registration addSaveListener(ComponentEventListener<SaveEvent<T, S>> listener) {
+//        return addListener(SaveEvent.class, (ComponentEventListener) listener);
+//    }
+//
+//    public Registration addCloseListener(ComponentEventListener<CloseEvent<T, S>> listener) {
+//        return addListener(CloseEvent.class, (ComponentEventListener) listener);
+//    }
 }

@@ -2,6 +2,7 @@ package com.aat.application.data.service;
 
 import java.util.List;
 
+import com.aat.application.core.ZJTService;
 import org.springframework.stereotype.Service;
 
 import com.aat.application.data.entity.ZJTResourceCategory;
@@ -10,7 +11,7 @@ import com.aat.application.data.repository.ResourceCategoryRepository;
 import com.aat.application.data.repository.ResourceTypeRepository;
 
 @Service
-public class ResourceTypeService {
+public class ResourceTypeService implements ZJTService<ZJTResourceType> {
 
 	public ResourceTypeService(ResourceTypeRepository repository, ResourceCategoryRepository rcRepo) {
 		this.repository = repository;
@@ -28,7 +29,7 @@ public class ResourceTypeService {
 		repository.delete(po);
 	}
 	
-	public List<ZJTResourceType> findAllResourceTypes(String stringFilter)
+	public List<ZJTResourceType> findAll(String stringFilter)
 	{
 		if (stringFilter == null || stringFilter.isEmpty()) {
 			return repository.findAll();

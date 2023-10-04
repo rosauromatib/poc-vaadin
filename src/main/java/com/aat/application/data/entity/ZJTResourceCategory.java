@@ -1,5 +1,6 @@
 package com.aat.application.data.entity;
 
+import com.aat.application.core.ZJTEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -12,7 +13,7 @@ import java.util.List;
  */
 @Entity
 @Table(name="zjt_resourcecategory")
-public class ZJTResourceCategory implements ZJTPo {
+public class ZJTResourceCategory implements ZJTPo, ZJTEntity {
 
 	
 	
