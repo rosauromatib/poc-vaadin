@@ -31,7 +31,6 @@ public class TripElementView extends VerticalLayout {
     List<ZJTElement> elements;
     Dictionary<String, Integer> pricingTypeDic = new Hashtable<>();
     TextField filterText = new TextField();
-    Span sp = new Span("Here is : ");
 
     private TripElementForm form;
     private final TripElementService service;

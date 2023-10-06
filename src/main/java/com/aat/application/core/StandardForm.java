@@ -1,10 +1,8 @@
 package com.aat.application.core;
 
-import com.aat.application.data.entity.ElementList;
+import com.aat.application.util.GlobalData;
 import com.vaadin.componentfactory.tuigrid.TuiGrid;
 import com.vaadin.componentfactory.tuigrid.model.*;
-import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -15,11 +13,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.shared.Registration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import javax.persistence.Column;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -38,20 +34,19 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
     Dictionary<String, Class<?>> headerTypeOptions = new Hashtable<>();
     List<Item> items = new ArrayList<>();
     List<T> tableData = new ArrayList<>();
-    Span sp = new Span("Here is : ");
 
     public StandardForm(Class<T> entityClass, S service) {
         addClassName("demo-app-form");
         this.service = service;
 
-        binder = new BeanValidationBinder<>(entityClass);
+//        binder = new BeanValidationBinder<>(entityClass);
         save = new Button("Save");
         close = new Button("Cancel");
 
         headers = configureHeader(entityClass);
         configureGrid(entityClass);
 
-        add(sp, getToolbar(entityClass), grid);
+        add(getToolbar(entityClass), grid);
 
 //        binder.bindInstanceFields(this);
     }
@@ -86,7 +81,7 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         grid.setHeaders(headers);
         items = this.getTableData(entityClass);
         grid.setItems(items);
-        grid.setColumns(this.getColumns());
+        grid.setColumns(this.getColumns(entityClass));
         grid.setRowHeaders(List.of("checkbox"));
 
         Theme inputTheme = new Theme();
@@ -129,22 +124,46 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
             }
             T row = tableData.get(event.getRow());
             if (columnIndex >= 0) {
-                String propertyName = headers.get(columnIndex);
+                String header = headers.get(columnIndex);
                 try {
-                    Field field = entityClass.getDeclaredField(propertyName);
+                    Field field = entityClass.getDeclaredField(header);
                     field.setAccessible(true);
-                    switch (headerOptions.get(propertyName)) {
+                    switch (headerOptions.get(header)) {
                         case "input":
                             field.set(row, event.getColValue());
                             break;
                         case "select_enum":
-                            Class<?> enumTypes = headerTypeOptions.get(propertyName);
+                            Class<?> enumTypes = headerTypeOptions.get(header);
                             if (enumTypes.isEnum()) {
                                 Enum<?>[] enumConstants = ((Class<Enum<?>>) enumTypes).getEnumConstants();
                                 int ordinal = Integer.parseInt(event.getColValue().substring(0, 1)) - 1;
                                 if (ordinal >= 0 && ordinal < enumConstants.length) {
                                     Enum<?> enumValue = enumConstants[ordinal];
                                     field.set(row, enumValue);
+                                }
+                            }
+                            break;
+                        case "select_class":
+                            String headerName = header.substring(0, 1).toUpperCase()
+                                    + header.substring(1);
+                            int ordinal = Integer.parseInt(event.getColValue().substring(0, 1)) - 1;
+
+                            Object dataSel = field.get(row);
+                            Field selField = dataSel.getClass().getDeclaredFields()[0];
+                            selField.setAccessible(true);
+                            int index = 0;
+
+                            for (Object result : GlobalData.listData.get(headerName)) {
+                                try {
+                                    Field idField = result.getClass().getDeclaredFields()[0];
+                                    idField.setAccessible(true);
+                                    Object idObj = idField.get(result);
+                                    if (index++ == ordinal) {
+                                        selField.set(dataSel, idObj);
+                                        break;
+                                    }
+                                } catch (IllegalAccessException e3) {
+                                    e3.printStackTrace();
                                 }
                             }
                             break;
@@ -156,7 +175,6 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
                     throw new RuntimeException(e);
                 }
             }
-            sp.add(" it's " + row);
 
             // Asynchronously save the modified row
             CompletableFuture.runAsync(() -> {
@@ -202,6 +220,25 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
                         case "select_enum":
                             rowData.set(i, String.valueOf(((Enum) headerField.get(data)).ordinal() + 1));
                             break;
+                        case "select_class":
+                            headerName = header.substring(0, 1).toUpperCase()
+                                    + header.substring(1);
+                            GlobalData.addData(headerName);
+                            int index = 0;
+                            Object dataSel = headerField.get(data);
+                            Field selField = dataSel.getClass().getDeclaredField("name");
+                            selField.setAccessible(true);
+                            String selName = (String) selField.get(dataSel);
+                            for (Object result : GlobalData.listData.get(headerName)) {
+                                Field nameField = result.getClass().getDeclaredField("name");
+                                nameField.setAccessible(true);
+                                String name = (String) nameField.get(GlobalData.listData.get(headerName).get(index++));
+                                if (selName.equals(name)) {
+                                    rowData.set(i, String.valueOf(index));
+                                    break;
+                                }
+                            }
+                            break;
                         default:
                             rowData.set(i, "");
                             break;
@@ -219,7 +256,7 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
         return TableData;
     }
 
-    private List<com.vaadin.componentfactory.tuigrid.model.Column> getColumns() {
+    private List<com.vaadin.componentfactory.tuigrid.model.Column> getColumns(Class<T> entityClass) {
         List<com.vaadin.componentfactory.tuigrid.model.Column> columns = new ArrayList<>();
         int nId = 0;
 
@@ -235,25 +272,48 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
             column.setEditable(true);
             column.setSortable(true);
             column.setSortingType("asc");
-//            if (headerOptions.get(header) == "input")
-                column.setType("input");
-            if (headerOptions.get(header) == "select_enum") {
-                column.setType("select");
-                column.setRoot(true);
-                column.setTarget("");
-                List<RelationOption> elementsList = new ArrayList<>();
-                Class<?> fieldEnum = headerTypeOptions.get(header);
-                int index = 1;
-                for (Enum elementList : ((Class<Enum>) fieldEnum).getEnumConstants()) {
-                    RelationOption option = new RelationOption(elementList.toString(), String.valueOf(index++));
-                    elementsList.add(option);
-                }
-                column.setRelationOptions(elementsList);
+            switch (headerOptions.get(header)) {
+                case "input":
+                    column.setType("input");
+                    break;
+                case "select_enum":
+                    column.setType("select");
+                    column.setRoot(true);
+                    column.setTarget("");
+                    List<RelationOption> elementsList = new ArrayList<>();
+                    Class<?> fieldEnum = headerTypeOptions.get(header);
+                    int index = 1;
+                    for (Enum elementList : ((Class<Enum>) fieldEnum).getEnumConstants()) {
+                        RelationOption option = new RelationOption(elementList.toString(), String.valueOf(index++));
+                        elementsList.add(option);
+                    }
+                    column.setRelationOptions(elementsList);
+                    break;
+                case "select_class":
+                    column.setType("select");
+                    column.setRoot(true);
+                    column.setTarget("");
+                    List<ZJTEntity> results = GlobalData.listData.get(headerName);
+                    index = 1;
+                    List<RelationOption> options = new ArrayList<>();
+                    for (Object result : results) {
+                        try {
+                            Field nameField = result.getClass().getDeclaredField("name");
+                            nameField.setAccessible(true);
+                            String name = (String) nameField.get(result);
+                            RelationOption option = new RelationOption(name, String.valueOf(index++));
+                            options.add(option);
+                        } catch (NoSuchFieldException | IllegalAccessException e3) {
+                            e3.printStackTrace();
+                        }
+                    }
+                    column.setRelationOptions(options);
+                    break;
+                default:
+                    break;
             }
             columns.add(column);
         }
-
-//        List<Column> columns = List.of(nameCol, desCol);
         return columns;
     }
 

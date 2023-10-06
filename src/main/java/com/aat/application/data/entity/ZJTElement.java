@@ -9,76 +9,74 @@ import java.util.List;
 
 
 @Entity
-@Table(name="zjt_element")
+@Table(name = "zjt_element")
+@NamedQuery(name = "findAllPricingType", query = "SELECT p FROM ZJTPricingType p")
 public class ZJTElement implements ZJTPo, ZJTEntity {
 
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "zjt_element_id")
-	private int zjt_element_id;
-	
-	@Column
-	@NotEmpty
-	private String name = "";
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "zjt_element_id")
+    private int zjt_element_id;
 
-	@ManyToOne
-	@JoinColumn(name="zjt_pricingtype_id", referencedColumnName = "zjt_pricingtype_id")
-	@NotNull
-	private ZJTPricingType pricingType;
+    @Column
+    @NotEmpty
+    private String name = "";
 
-	@OneToMany(mappedBy = "tripElement", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ZJTProduct> children1;
+    @ManyToOne
+    @JoinColumn(name = "zjt_pricingtype_id", referencedColumnName = "zjt_pricingtype_id")
+    @NotNull
+    private ZJTPricingType pricingType;
 
-	@OneToMany(mappedBy = "tripelement", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ZJTComponentLine> children2;
-	
-	@Enumerated(EnumType.STRING)
-	@NotNull
-	private Uom uom;
+    @OneToMany(mappedBy = "tripElement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ZJTProduct> children1;
 
-	@Enumerated(EnumType.STRING)
-	private ElementList elementlist;
+    @OneToMany(mappedBy = "tripelement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ZJTComponentLine> children2;
 
-	public int getZjt_element_id() {
-		return zjt_element_id;
-	}
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private Uom uom;
 
-	public ElementList getElementlist() {
-		return elementlist;
-	}
+    @Enumerated(EnumType.STRING)
+    private ElementList elementlist;
 
-	public void setElementlist(ElementList elementlist) {
-		this.elementlist = elementlist;
-	}
+    public int getZjt_element_id() {
+        return zjt_element_id;
+    }
 
-	public void setZjt_element_id(int zjt_element_id) {
-		this.zjt_element_id = zjt_element_id;
-	}
+    public ElementList getElementlist() {
+        return elementlist;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setElementlist(ElementList elementlist) {
+        this.elementlist = elementlist;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setZjt_element_id(int zjt_element_id) {
+        this.zjt_element_id = zjt_element_id;
+    }
 
-	public ZJTPricingType getPricingType() {
-		return pricingType;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setPricingType(ZJTPricingType pricingType) {
-		this.pricingType = pricingType;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Uom getUom() {
-		return uom;
-	}
+    public ZJTPricingType getPricingType() {
+        return pricingType;
+    }
 
-	public void setUom(Uom uom) {
-		this.uom = uom;
-	}
+    public void setPricingType(ZJTPricingType pricingType) {
+        this.pricingType = pricingType;
+    }
 
-	
+    public Uom getUom() {
+        return uom;
+    }
+
+    public void setUom(Uom uom) {
+        this.uom = uom;
+    }
 }
