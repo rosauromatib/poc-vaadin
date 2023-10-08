@@ -10,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name="zjt_resourcetype")
+@NamedQuery(name = "findAllResourceCategory", query = "SELECT p FROM ZJTResourceCategory p")
 public class ZJTResourceType implements ZJTPo, ZJTEntity {
 
 	@Id
@@ -19,14 +20,14 @@ public class ZJTResourceType implements ZJTPo, ZJTEntity {
 	
 	@Column
 	@NotEmpty
-	private String name;
+	private String name = "";
 
 	@Column
-	private String description;
+	private String description = "";
 
 	@ManyToOne
 	@JoinColumn(name="zjt_resourcecategory_id", referencedColumnName = "zjt_resourcecategory_id")
-	@NotNull
+//	@NotNull
 	private ZJTResourceCategory resourceCategory;
 
 	@OneToMany(mappedBy = "resourceType", cascade = CascadeType.ALL, orphanRemoval = true)

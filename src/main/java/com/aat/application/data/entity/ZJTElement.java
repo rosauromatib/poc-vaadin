@@ -24,7 +24,7 @@ public class ZJTElement implements ZJTPo, ZJTEntity {
 
     @ManyToOne
     @JoinColumn(name = "zjt_pricingtype_id", referencedColumnName = "zjt_pricingtype_id")
-    @NotNull
+//    @NotNull
     private ZJTPricingType pricingType;
 
     @OneToMany(mappedBy = "tripElement", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -35,10 +35,10 @@ public class ZJTElement implements ZJTPo, ZJTEntity {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private Uom uom;
+    private Uom uom = Uom.E;
 
     @Enumerated(EnumType.STRING)
-    private ElementList elementlist;
+    private ElementList elementlist = ElementList.DH;
 
     public int getZjt_element_id() {
         return zjt_element_id;

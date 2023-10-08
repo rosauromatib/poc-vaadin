@@ -78,10 +78,14 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
     private void configureGrid(Class<T> entityClass) {
         grid = new TuiGrid();
         grid.addClassName("scheduler-grid");
+
         grid.setHeaders(headers);
+
+        grid.setColumns(this.getColumns(entityClass));
+
         items = this.getTableData(entityClass);
         grid.setItems(items);
-        grid.setColumns(this.getColumns(entityClass));
+
         grid.setRowHeaders(List.of("checkbox"));
 
         Theme inputTheme = new Theme();
@@ -149,6 +153,8 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
                             int ordinal = Integer.parseInt(event.getColValue().substring(0, 1)) - 1;
 
                             Object dataSel = field.get(row);
+                            if(dataSel == null)
+                                dataSel = field.getType().getDeclaredConstructor().newInstance();
                             Field selField = dataSel.getClass().getDeclaredFields()[0];
                             selField.setAccessible(true);
                             int index = 0;
@@ -160,9 +166,10 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
                                     Object idObj = idField.get(result);
                                     if (index++ == ordinal) {
                                         selField.set(dataSel, idObj);
+                                        field.set(row, dataSel);
                                         break;
                                     }
-                                } catch (IllegalAccessException e3) {
+                                } catch (RuntimeException | IllegalAccessException e3) {
                                     e3.printStackTrace();
                                 }
                             }
@@ -172,6 +179,12 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
                             break;
                     }
                 } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -223,9 +236,10 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
                         case "select_class":
                             headerName = header.substring(0, 1).toUpperCase()
                                     + header.substring(1);
-                            GlobalData.addData(headerName);
                             int index = 0;
                             Object dataSel = headerField.get(data);
+                            if(dataSel == null)
+                                dataSel = headerField.getType().getDeclaredConstructor().newInstance();
                             Field selField = dataSel.getClass().getDeclaredField("name");
                             selField.setAccessible(true);
                             String selName = (String) selField.get(dataSel);
@@ -245,6 +259,12 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
                     }
 
                 } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -293,6 +313,7 @@ public abstract class StandardForm<T extends ZJTEntity, S extends ZJTService<T>>
                     column.setType("select");
                     column.setRoot(true);
                     column.setTarget("");
+                    GlobalData.addData(headerName);
                     List<ZJTEntity> results = GlobalData.listData.get(headerName);
                     index = 1;
                     List<RelationOption> options = new ArrayList<>();
