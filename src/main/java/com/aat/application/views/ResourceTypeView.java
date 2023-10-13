@@ -1,7 +1,9 @@
 package com.aat.application.views;
 
-import com.aat.application.data.service.ResourceTypeService;
-import com.aat.application.form.ResourceTypeForm;
+import com.aat.application.data.entity.ZJTResourceType;
+import com.aat.application.data.repository.BaseEntityRepository;
+import com.aat.application.data.service.BaseEntityService;
+import com.aat.application.form.CommonForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -10,19 +12,18 @@ import com.vaadin.flow.router.Route;
 @Route(value = "resourcetype", layout = MainLayout.class)
 
 public class ResourceTypeView extends VerticalLayout {
-    private ResourceTypeForm form;
-    private final ResourceTypeService service;
+    private CommonForm<ZJTResourceType> form;
+    private final BaseEntityRepository<ZJTResourceType> repository;
 
-    public ResourceTypeView(ResourceTypeService service) {
-        this.service = service;
-
+    public ResourceTypeView(BaseEntityRepository<ZJTResourceType> repository) {
+        this.repository = repository;
+        this.repository.setEntityClass(ZJTResourceType.class);
         configureForm();
         add(form);
     }
 
     private void configureForm() {
-        form = new ResourceTypeForm(service);
+        form = new CommonForm<>(ZJTResourceType.class,new BaseEntityService<>(repository));
         form.setWidth("25em");
-
     }
 }

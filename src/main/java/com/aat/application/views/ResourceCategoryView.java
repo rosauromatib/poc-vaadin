@@ -1,7 +1,9 @@
 package com.aat.application.views;
 
-import com.aat.application.data.service.ResourceCategoryService;
-import com.aat.application.form.ResourceCategoryForm;
+import com.aat.application.data.entity.ZJTResourceCategory;
+import com.aat.application.data.repository.BaseEntityRepository;
+import com.aat.application.data.service.BaseEntityService;
+import com.aat.application.form.CommonForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -10,19 +12,18 @@ import com.vaadin.flow.router.Route;
 @Route(value = "resourcecategory", layout = MainLayout.class)
 public class ResourceCategoryView extends VerticalLayout {
 
-    private ResourceCategoryForm form;
-    private final ResourceCategoryService service;
+    private CommonForm<ZJTResourceCategory>  form;
+    private final BaseEntityRepository<ZJTResourceCategory> repository;
 
-    public ResourceCategoryView(ResourceCategoryService service) {
-        this.service = service;
-
+    public ResourceCategoryView(BaseEntityRepository<ZJTResourceCategory> repository) {
+        this.repository = repository;
+        this.repository.setEntityClass(ZJTResourceCategory.class);
         configureForm();
         add(form);
     }
 
     private void configureForm() {
-        form = new ResourceCategoryForm(service);
+        form = new CommonForm<>(ZJTResourceCategory.class,new BaseEntityService<>(repository));
         form.setWidth("25em");
-
     }
 }
