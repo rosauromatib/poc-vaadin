@@ -1,13 +1,11 @@
 package com.aat.application.data.service;
 
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.aat.application.data.repository.BaseEntityRepository;
 import org.springframework.stereotype.Service;
 
 import com.aat.application.data.entity.ElementList;
@@ -20,7 +18,6 @@ import com.aat.application.data.entity.ZJTResourceType;
 import com.aat.application.data.repository.PricelistItemRepository;
 import com.aat.application.data.repository.PricelistRepository;
 import com.aat.application.data.repository.ProductRepository;
-import com.aat.application.data.repository.ResourceTypeRepository;
 
 @Service
 public class QuoteService {
@@ -28,14 +25,14 @@ public class QuoteService {
 	private final PricelistRepository plRepository;
 	private final PricelistItemRepository itemRepository;
 	private final ProductRepository productRepository;
-	private final ResourceTypeRepository rtRepo;
+	private final BaseEntityRepository<ZJTResourceType> rtRepo;
 	
 	private List<ZJTResourceType> resourceTypes;
 	
 	public QuoteService(PricelistRepository plRepository
 			, PricelistItemRepository itemRepository
 			, ProductRepository productRepository
-			, ResourceTypeRepository rtRepository) {
+			, BaseEntityRepository<ZJTResourceType> rtRepository) {
 		this.plRepository = plRepository;
 		this.itemRepository = itemRepository;
 		this.productRepository = productRepository;
@@ -71,7 +68,7 @@ public class QuoteService {
 	public List<ZJTResourceType> getResourceTypes()
 	{
 		if (resourceTypes == null) {
-			resourceTypes = rtRepo.findAll(); 
+			resourceTypes = rtRepo.findAll(null);
 		}
 		return resourceTypes;
 		

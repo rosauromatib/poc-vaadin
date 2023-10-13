@@ -4,11 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.aat.application.data.entity.ZJTElement;
-import com.aat.application.data.entity.ZJTPricingType;
 import com.aat.application.data.entity.ZJTVehicle;
-import com.aat.application.data.repository.PricingTypeRepository;
-import com.aat.application.data.repository.TripElementRepository;
 import com.aat.application.data.repository.VehicleRepository;
 
 @Service

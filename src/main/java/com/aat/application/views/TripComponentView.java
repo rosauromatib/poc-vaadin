@@ -38,7 +38,7 @@ public class TripComponentView extends VerticalLayout {
     public TripComponentView(ProductService service) {
         this.service = service;
 
-        setSizeFull();
+//        setSizeFull();
 
         configureGrid();
         configureForm();
@@ -155,6 +155,7 @@ public class TripComponentView extends VerticalLayout {
         inputTheme.setOpacity(1);
 
         grid.setInputTheme(inputTheme);
+        grid.setSelectTheme(inputTheme);
 
         grid.addItemChangeListener(event -> {
             GuiItem item = (GuiItem) items.get(event.getRow());

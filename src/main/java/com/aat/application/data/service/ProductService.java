@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.aat.application.data.entity.*;
+import com.aat.application.data.repository.BaseEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.aat.application.data.repository.ComponentLineRepository;
 import com.aat.application.data.repository.ProductRepository;
-import com.aat.application.data.repository.ResourceTypeRepository;
-import com.aat.application.data.repository.TripElementRepository;
 
 import jakarta.persistence.EntityManager;
 
@@ -20,8 +19,8 @@ import jakarta.persistence.EntityManager;
 public class ProductService {
 
     public ProductService(ProductRepository repository
-            , ResourceTypeRepository rtRepo
-            , TripElementRepository teRepo
+            , BaseEntityRepository<ZJTResourceType> rtRepo
+            , BaseEntityRepository<ZJTElement> teRepo
             , ComponentLineRepository clRepo
     ) {
         this.repository = repository;
@@ -31,8 +30,8 @@ public class ProductService {
     }
     @Autowired
     private final ProductRepository repository;
-    private final TripElementRepository teRepo;
-    private final ResourceTypeRepository rtRepo;
+    private final BaseEntityRepository<ZJTElement> teRepo;
+    private final BaseEntityRepository<ZJTResourceType> rtRepo;
     private final ComponentLineRepository clRepo;
 
     @Autowired
@@ -84,13 +83,15 @@ public class ProductService {
 
     public List<ZJTElement> getTripElements() {
         if (allTripElements == null) {
-            allTripElements = teRepo.findAll();
+            this.teRepo.setEntityClass(ZJTElement.class);
+            allTripElements = teRepo.findAll(null);
         }
         return allTripElements;
     }
 
     public List<ZJTResourceType> getResourceTypes() {
-        return rtRepo.findAll();
+        this.rtRepo.setEntityClass(ZJTResourceType.class);
+        return rtRepo.findAll(null);
     }
 
     public void populateComponents() {
