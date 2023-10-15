@@ -1,6 +1,9 @@
 package com.aat.application.data.entity;
 
 import com.aat.application.core.ZJTEntity;
+import com.aat.application.views.MainLayout;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name="zjt_resourcetype")
+@PageTitle("Resource Type")
 @NamedQuery(name = "findAllResourceCategory", query = "SELECT p FROM ZJTResourceCategory p")
 public class ZJTResourceType implements ZJTPo, ZJTEntity {
 

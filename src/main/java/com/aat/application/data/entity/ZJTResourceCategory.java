@@ -1,6 +1,7 @@
 package com.aat.application.data.entity;
 
 import com.aat.application.core.ZJTEntity;
+import com.vaadin.flow.router.PageTitle;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -13,10 +14,9 @@ import java.util.List;
  */
 @Entity
 @Table(name="zjt_resourcecategory")
+@PageTitle("Resource Category")
 public class ZJTResourceCategory implements ZJTPo, ZJTEntity {
 
-	
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column (name="zjt_resourcecategory_id")

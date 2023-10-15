@@ -1,6 +1,7 @@
 package com.aat.application.data.entity;
 
 import com.aat.application.core.ZJTEntity;
+import com.vaadin.flow.router.PageTitle;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "zjt_pricingtype")
+@PageTitle("Pricing Type")
 public class ZJTPricingType implements ZJTEntity {
 
 

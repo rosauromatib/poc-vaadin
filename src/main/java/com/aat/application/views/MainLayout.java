@@ -1,6 +1,16 @@
 package com.aat.application.views;
 
 
+import com.aat.application.data.entity.ZJTElement;
+import com.aat.application.data.entity.ZJTPricingType;
+import com.aat.application.data.entity.ZJTResourceCategory;
+import com.aat.application.data.entity.ZJTResourceType;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.HasElement;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.router.HasDynamicTitle;
+import com.vaadin.flow.router.RouterLink;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import com.aat.application.components.appnav.AppNav;
@@ -18,6 +28,8 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import java.util.List;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -63,7 +75,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new AppNavItem("Vehicle List", Vehicle0View.class, LineAwesomeIcon.BABY_CARRIAGE_SOLID.create()));
         AppNavItem parent = new AppNavItem("Trip Module");
         parent.setIcon(LineAwesomeIcon.FOLDER.create());
-		nav.addItem(parent);
+        nav.addItem(parent);
         parent.addItem(new AppNavItem("Product", ProductView.class, LineAwesomeIcon.PRODUCT_HUNT.create()));
         parent.addItem(new AppNavItem("Trip Component", TripComponentView.class, LineAwesomeIcon.TRIPADVISOR.create()));
         parent.addItem(new AppNavItem("Trip Itinerary", TripItineraryView.class, LineAwesomeIcon.TRIPADVISOR.create()));
@@ -72,26 +84,30 @@ public class MainLayout extends AppLayout {
 
         parent = new AppNavItem("Resource Scheduling");
         parent.setIcon(LineAwesomeIcon.CALENDAR_ALT.create());
-		nav.addItem(parent);
-		parent.addItem(new AppNavItem("Schedule Planner", PlanningView.class, LineAwesomeIcon.CALENDAR_ALT.create()));
-        
+        nav.addItem(parent);
+        parent.addItem(new AppNavItem("Schedule Planner", PlanningView.class, LineAwesomeIcon.CALENDAR_ALT.create()));
+
         parent = new AppNavItem("Vehicle Maintenance");
         parent.setIcon(LineAwesomeIcon.BUS_ALT_SOLID.create());
-		nav.addItem(parent);
-		parent.addItem(new AppNavItem("Vehicle", VehicleView.class, LineAwesomeIcon.BUS_SOLID.create()));
-		
+        nav.addItem(parent);
+        parent.addItem(new AppNavItem("Vehicle", VehicleView.class, LineAwesomeIcon.BUS_SOLID.create()));
+
         parent = new AppNavItem("Setup Data");
         parent.setIcon(LineAwesomeIcon.FOLDER.create());
-		nav.addItem(parent);
-        parent.addItem(new AppNavItem("Pricing Type", PricingTypeView.class, LineAwesomeIcon.PRODUCT_HUNT.create()));
-        parent.addItem(new AppNavItem("Trip Element", TripElementView.class, LineAwesomeIcon.PRODUCT_HUNT.create()));
-        parent.addItem(new AppNavItem("Resource Category", ResourceCategoryView.class, LineAwesomeIcon.PRODUCT_HUNT.create()));
-        parent.addItem(new AppNavItem("Resource Type", ResourceTypeView.class, LineAwesomeIcon.PRODUCT_HUNT.create()));
+        nav.addItem(parent);
+        parent.addItem(new AppNavItem("Pricing Type", CommonView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
+                .withParameter(CommonView.class, "entityClass", ZJTPricingType.class.getSimpleName()));
+        parent.addItem(new AppNavItem("Trip Element", CommonView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
+                .withParameter(CommonView.class, "entityClass", ZJTElement.class.getSimpleName()));
+        parent.addItem(new AppNavItem("Resource Category", CommonView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
+                .withParameter(CommonView.class, "entityClass", ZJTResourceCategory.class.getSimpleName()));
+        parent.addItem(new AppNavItem("Resource Type", CommonView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
+                .withParameter(CommonView.class, "entityClass", ZJTResourceType.class.getSimpleName()));
 //        nav.addItem(new AppNavItem("Vehicle List", VehicleView.class, LineAwesomeIcon.BABY_CARRIAGE_SOLID.create()));
 
         parent = new AppNavItem("UI Test");
         parent.setIcon(LineAwesomeIcon.UIKIT.create());
-		nav.addItem(parent);
+        nav.addItem(parent);
         parent.addItem(new AppNavItem("ToastUI Grid", UIToastGridView.class, LineAwesomeIcon.COMPASS.create()));
 
         nav.addItem(new AppNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));

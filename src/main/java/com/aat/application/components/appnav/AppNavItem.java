@@ -2,12 +2,15 @@ package com.aat.application.components.appnav;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.internal.StateTree;
-import com.vaadin.flow.router.RouteConfiguration;
-import com.vaadin.flow.router.Router;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.VaadinService;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -19,12 +22,13 @@ import java.util.Optional;
 @Tag("vcf-nav-item")
 public class AppNavItem extends Component {
 
+    private Map<String, String> parameters;
+
     /**
      * Creates a menu item which does not link to any view but only shows the given
      * label.
-     * 
-     * @param label
-     *            the label for the item
+     *
+     * @param label the label for the item
      */
     public AppNavItem(String label) {
         setLabel(label);
@@ -32,11 +36,9 @@ public class AppNavItem extends Component {
 
     /**
      * Creates a new menu item using the given label that links to the given path.
-     * 
-     * @param label
-     *            the label for the item
-     * @param path
-     *            the path to link to
+     *
+     * @param label the label for the item
+     * @param path  the path to link to
      */
     public AppNavItem(String label, String path) {
         setPath(path);
@@ -45,11 +47,9 @@ public class AppNavItem extends Component {
 
     /**
      * Creates a new menu item using the given label that links to the given view.
-     * 
-     * @param label
-     *            the label for the item
-     * @param view
-     *            the view to link to
+     *
+     * @param label the label for the item
+     * @param view  the view to link to
      */
     public AppNavItem(String label, Class<? extends Component> view) {
         setPath(view);
@@ -59,13 +59,10 @@ public class AppNavItem extends Component {
     /**
      * Creates a new menu item using the given label and icon that links to the
      * given path.
-     * 
-     * @param label
-     *            the label for the item
-     * @param path
-     *            the path to link to
-     * @param icon
-     *            the icon for the item
+     *
+     * @param label the label for the item
+     * @param path  the path to link to
+     * @param icon  the icon for the item
      */
     public AppNavItem(String label, String path, Component icon) {
         setPath(path);
@@ -75,25 +72,22 @@ public class AppNavItem extends Component {
 
     /**
      * Creates a new menu item using the given label that links to the given view.
-     * 
-     * @param label
-     *            the label for the item
-     * @param view
-     *            the view to link to
-     * @param icon
-     *            the icon for the item
+     *
+     * @param label the label for the item
+     * @param view  the view to link to
+     * @param icon  the icon for the item
      */
     public AppNavItem(String label, Class<? extends Component> view, Component icon) {
         setPath(view);
         setLabel(label);
         setIcon(icon);
+        parameters = new HashMap<>();
     }
 
     /**
      * Adds menu item(s) inside this item, creating a hierarchy.
-     * 
-     * @param appNavItems
-     *            the menu item(s) to add
+     *
+     * @param appNavItems the menu item(s) to add
      * @return this item for chaining
      */
     public AppNavItem addItem(AppNavItem... appNavItems) {
@@ -109,9 +103,8 @@ public class AppNavItem extends Component {
      * Removes the given menu item from this item.
      * <p>
      * If the given menu item is not a child of this menu item, does nothing.
-     * 
-     * @param appNavItem
-     *            the menu item to remove
+     *
+     * @param appNavItem the menu item to remove
      * @return this item for chaining
      */
     public AppNavItem removeItem(AppNavItem appNavItem) {
@@ -125,7 +118,7 @@ public class AppNavItem extends Component {
 
     /**
      * Removes all menu items from this item.
-     * 
+     *
      * @return this item for chaining
      */
     public AppNavItem removeAllItems() {
@@ -135,7 +128,7 @@ public class AppNavItem extends Component {
 
     /**
      * Gets the label for the item.
-     * 
+     *
      * @return the label or null if no label has been set
      */
     public String getLabel() {
@@ -146,9 +139,8 @@ public class AppNavItem extends Component {
      * Set a textual label for the item.
      * <p>
      * The label is also available for screen rader users.
-     * 
-     * @param label
-     *            the label to set
+     *
+     * @param label the label to set
      * @return this instance for chaining
      */
     public AppNavItem setLabel(String label) {
@@ -170,9 +162,8 @@ public class AppNavItem extends Component {
 
     /**
      * Sets the path this item links to.
-     * 
-     * @param path
-     *            the path to link to
+     *
+     * @param path the path to link to
      * @return this instance for chaining
      */
     public AppNavItem setPath(String path) {
@@ -182,13 +173,20 @@ public class AppNavItem extends Component {
 
     /**
      * Sets the view this item links to.
-     * 
-     * @param view
-     *            the view to link to
+     *
+     * @param view the view to link to
      * @return this instance for chaining
      */
     public AppNavItem setPath(Class<? extends Component> view) {
-        String url = RouteConfiguration.forRegistry(getRouter().getRegistry()).getUrl(view);
+        String url = "";
+
+        if (this.parameters != null) {
+//            url = RouteConfiguration.forRegistry(getRouter().getRegistry()).getUrl(view);
+            RouterLink link = new RouterLink("Go to CommonView", view);
+            url = link.getHref() + "?entityClass=" + this.parameters.get("entityClass");
+        }
+        else
+            url = RouteConfiguration.forRegistry(getRouter().getRegistry()).getUrl(view);
         setPath(url);
         return this;
     }
@@ -226,9 +224,8 @@ public class AppNavItem extends Component {
      * Sets the icon for the item.
      * <p>
      * Can also be used to set a custom component to be shown in front of the label.
-     * 
-     * @param icon
-     *            the icon to show
+     *
+     * @param icon the icon to show
      * @return this instance for chaining
      */
     public AppNavItem setIcon(Component icon) {
@@ -245,8 +242,7 @@ public class AppNavItem extends Component {
     /**
      * Sets the expanded status of the item.
      *
-     * @param value
-     *            true to expand the item, false to collapse it
+     * @param value true to expand the item, false to collapse it
      */
     public AppNavItem setExpanded(boolean value) {
         if (value) {
@@ -255,6 +251,26 @@ public class AppNavItem extends Component {
             getElement().removeAttribute("expanded");
         }
         return this;
+    }
+
+    /**
+     * Sets a parameter for the view this item links to.
+     *
+     * @param parameterName  the parameter name
+     * @param parameterValue the parameter value
+     * @return this instance for chaining
+     */
+    public AppNavItem withParameter(Class<? extends Component> view, String parameterName, String parameterValue) {
+        if (parameters == null) {
+            parameters = new HashMap<>();
+        }
+        parameters.put(parameterName, parameterValue);
+        setPath(view);
+        return this;
+    }
+
+    public Object getParameter(String name) {
+        return UI.getCurrent().getSession().getAttribute(name);
     }
 
 }

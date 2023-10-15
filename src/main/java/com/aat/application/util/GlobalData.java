@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class GlobalData {
     public static Map<String, List<ZJTEntity>> listData = new HashMap<>();
+    public static String ENTITY_PATH = "com.aat.application.data.entity";
 
     public static void addData(String headerName) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("my_persistence_unit");

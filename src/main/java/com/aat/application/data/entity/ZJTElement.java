@@ -1,6 +1,7 @@
 package com.aat.application.data.entity;
 
 import com.aat.application.core.ZJTEntity;
+import com.vaadin.flow.router.PageTitle;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "zjt_element")
+@PageTitle("Trip Element")
 @NamedQuery(name = "findAllPricingType", query = "SELECT p FROM ZJTPricingType p")
 public class ZJTElement implements ZJTPo, ZJTEntity {
 

@@ -3,6 +3,7 @@ package com.aat.application.data.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.ParameterizedType;
@@ -52,12 +53,23 @@ public class BaseEntityRepository<T> {
         return getEntityClass().getSimpleName();
     }
 
+    @Transactional
     public T saveEntity(T entity) {
-        entityManager.persist(entity);
+        try {
+            entityManager.merge(entity);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
         return entity;
     }
 
+    @Transactional
     public void deleteEntity(T entity) {
-        entityManager.remove(entity);
+        try {
+            T mergedEntity = entityManager.merge(entity);
+            entityManager.remove(mergedEntity);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
     }
 }

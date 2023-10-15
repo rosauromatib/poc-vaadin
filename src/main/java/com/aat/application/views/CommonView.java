@@ -1,0 +1,69 @@
+package com.aat.application.views;
+
+import com.aat.application.core.ZJTEntity;
+import com.aat.application.data.repository.BaseEntityRepository;
+import com.aat.application.data.service.BaseEntityService;
+import com.aat.application.form.CommonForm;
+import com.aat.application.util.GlobalData;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.*;
+
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+@Route(value = "commonview", layout = MainLayout.class)
+public class CommonView<T extends ZJTEntity> extends VerticalLayout implements RouterLayout, BeforeEnterObserver, HasDynamicTitle {
+
+    protected CommonForm<T> form;
+    protected final BaseEntityRepository<T> repository;
+    protected Class<T> entityClass;
+    private String title = "";
+
+    public CommonView(BaseEntityRepository<T> repository) {
+        this.repository = repository;
+    }
+
+    private void configureForm() {
+        if (form != null)
+            remove(form);
+
+        form = new CommonForm<>(entityClass, new BaseEntityService<>(repository));
+        form.setWidth("25em");
+        add(form);
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        QueryParameters queryParameters = event.getLocation().getQueryParameters();
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+
+        queryParameters.getParameters().forEach((key, values) -> {
+            values.forEach(value -> parameters.add(key, value));
+        });
+        String entityClassName = parameters.getFirst("entityClass");
+        if (entityClassName != null) {
+            try {
+                entityClass = (Class<T>) Class.forName(GlobalData.ENTITY_PATH + "." + entityClassName);
+                PageTitle pageTitleAnnotation = entityClass.getAnnotation(PageTitle.class);
+                if (pageTitleAnnotation != null) {
+                    title = pageTitleAnnotation.value();
+                }
+            } catch (ClassNotFoundException e) {
+                // Handle class not found exception
+                event.rerouteToError(NotFoundException.class);
+            }
+        }
+
+        if (entityClass == null) {
+            event.rerouteToError(NotFoundException.class);
+        } else {
+            repository.setEntityClass(entityClass);
+            configureForm();
+        }
+    }
+
+    @Override
+    public String getPageTitle() {
+        return title;
+    }
+}
