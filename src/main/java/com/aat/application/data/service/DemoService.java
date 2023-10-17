@@ -1,10 +1,7 @@
 package com.aat.application.data.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
-import com.aat.application.data.entity.Product;
 import com.aat.application.data.repository.ProductRepository;
 
 @Service

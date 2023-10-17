@@ -1,18 +1,15 @@
 package com.aat.application.data.entity;
 
 /**
- * H - Hour
- * K - KM
- * E - Each
  * @author jtrinidad
  *
  */
-public enum Uom {
-	H("Hour"), K ("KM"), E ("Each");
+public enum ZJETripLegType {
+	LR("Laden Running"), LS ("Laden Standing"), UR ("Unladen Running"), US("Unladen Standing"); 
 	
     private final String name;
 
-    Uom(String name) {
+    ZJETripLegType(String name) {
         this.name = name;
     }
 

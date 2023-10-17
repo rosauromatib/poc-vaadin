@@ -2,7 +2,7 @@ package com.aat.application.data.entity;
 
 import java.math.BigDecimal;
 
-public class PriceListRow {
+public class ZJXPriceListRow {
 
 	String name;
 	BigDecimal vehicleHours;
@@ -19,7 +19,7 @@ public class PriceListRow {
 	ZJTPriceListItem overHeadItem;
 	ZJTPriceListItem profitMarginItem;
 	
-	public PriceListRow(ZJTResourceType resourceType, ZJTPricelist pricelist) {
+	public ZJXPriceListRow(ZJTResourceType resourceType, ZJTPricelist pricelist) {
 		super();
 		this.name = resourceType.getName();
 		this.resourceType = resourceType;

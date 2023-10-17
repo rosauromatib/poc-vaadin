@@ -1,36 +1,23 @@
 package com.aat.application.views;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonReader;
-
-import com.aat.application.data.entity.PriceListRow;
+import com.aat.application.data.entity.ZJXPriceListRow;
 import com.aat.application.data.entity.ZJTPricelist;
 import com.aat.application.data.entity.ZJTProduct;
-import com.aat.application.data.service.PricelistService;
 import com.aat.application.data.service.QuoteService;
 import com.vaadin.componentfactory.tuigrid.TuiGrid;
 import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Focusable;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.grid.ColumnTextAlign;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -47,9 +34,9 @@ public class QuoteView extends VerticalLayout {
     ComboBox<ZJTProduct> itiCombo = new ComboBox<>("Itineraries");
 
     //    private Grid<PriceListRow> grid = new Grid<>(PriceListRow.class, false);
-    private final BeanValidationBinder<PriceListRow> binder = new BeanValidationBinder<>(PriceListRow.class);
+    private final BeanValidationBinder<ZJXPriceListRow> binder = new BeanValidationBinder<>(ZJXPriceListRow.class);
     TuiGrid grid;
-    List<PriceListRow> listPricingType;
+    List<ZJXPriceListRow> listPricingType;
 
 
     private List<ZJTPricelist> m_pricelists;
@@ -74,18 +61,18 @@ public class QuoteView extends VerticalLayout {
         try {
             listPricingType = service.getTabulatedItems(pricelistCombo.getValue());
 
-            Comparator<PriceListRow> comparator = Comparator.comparing(item -> item.getName());
+            Comparator<ZJXPriceListRow> comparator = Comparator.comparing(item -> item.getName());
             Collections.sort(listPricingType, comparator);
 
             List<String> headers = List.of("name", "vehicle_hours", "vehicle_km", "driver_hours", "over_head", "profit_margin");
-            for (PriceListRow priceListRow :
+            for (ZJXPriceListRow ZJXPriceListRow :
                     listPricingType) {
-                TableData.add(new GuiItem(List.of(priceListRow.getName(),
-                        String.valueOf(priceListRow.getVehicleHours()),
-                        String.valueOf(priceListRow.getVehicleKM()),
-                        String.valueOf(priceListRow.getDriverHours()),
-                        String.valueOf(priceListRow.getOverHead()),
-                        String.valueOf(priceListRow.getProfitMargin())),
+                TableData.add(new GuiItem(List.of(ZJXPriceListRow.getName(),
+                        String.valueOf(ZJXPriceListRow.getVehicleHours()),
+                        String.valueOf(ZJXPriceListRow.getVehicleKM()),
+                        String.valueOf(ZJXPriceListRow.getDriverHours()),
+                        String.valueOf(ZJXPriceListRow.getOverHead()),
+                        String.valueOf(ZJXPriceListRow.getProfitMargin())),
                         headers));
 
             }
@@ -269,7 +256,7 @@ public class QuoteView extends VerticalLayout {
 
     private void updatePriceTable() {
 
-        List<PriceListRow> rows = service.getTabulatedItems(pricelistCombo.getValue());
+        List<ZJXPriceListRow> rows = service.getTabulatedItems(pricelistCombo.getValue());
 
 //        grid.setItems(rows);
 //		legsCombo.setItems(new ArrayList<ZJTProduct>());

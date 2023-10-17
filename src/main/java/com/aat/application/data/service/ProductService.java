@@ -73,11 +73,11 @@ public class ProductService {
 
     public List<ZJTProduct> findAllTripComponent(String stringFilter) {
 //		return repository.findByTripTypeIs(TripType.TC);
-        return repository.findByNameContainingIgnoreCaseAndTripTypeIs(stringFilter, TripType.TC);
+        return repository.findByNameContainingIgnoreCaseAndTripTypeIs(stringFilter, ZJETripType.TC);
     }
 
     public List<ZJTProduct> findAllTripItineraries(String stringFilter) {
-        return repository.findByTripTypeIs(TripType.TI);
+        return repository.findByTripTypeIs(ZJETripType.TI);
 //		return repository.findByNameContainingIgnoreCaseAndTripTypeIs(stringFilter, TripType.TI);
     }
 
@@ -104,7 +104,7 @@ public class ProductService {
                 ZJTProduct product = new ZJTProduct();
                 product.setTripElement(tripElement);
                 product.setResourceType(resourceType);
-                product.setTripType(TripType.TC);
+                product.setTripType(ZJETripType.TC);
                 product.setName(resourceType.getName() + " - " + tripElement.getName());
 //				System.out.println(resourceType.getName() +" - " + tripElement.getName());
 

@@ -5,14 +5,11 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.vaadin.addons.componentfactory.PivotTable;
 import org.vaadin.addons.componentfactory.PivotTable.Aggregator;
@@ -20,37 +17,28 @@ import org.vaadin.addons.componentfactory.PivotTable.JsonPivotData;
 import org.vaadin.addons.componentfactory.PivotTable.PivotMode;
 import org.vaadin.addons.componentfactory.PivotTable.PivotOptions;
 
-import com.aat.application.data.entity.TripLegType;
-import com.aat.application.data.entity.TripType;
+import com.aat.application.data.entity.ZJETripLegType;
+import com.aat.application.data.entity.ZJETripType;
 import com.aat.application.data.entity.ZJTComponentLine;
 import com.aat.application.data.entity.ZJTElement;
 import com.aat.application.data.entity.ZJTProduct;
-import com.aat.application.data.service.DemoService;
 import com.aat.application.data.service.ProductService;
-import com.aat.application.form.ProductForm;
-import com.aat.application.form.ProductForm.DeleteEvent;
-import com.aat.application.form.ProductForm.SaveEvent;
 import com.vaadin.componentfactory.timeline.Timeline;
 import com.vaadin.componentfactory.timeline.event.ItemResizeEvent;
 import com.vaadin.componentfactory.timeline.event.ItemsDragAndDropEvent;
 import com.vaadin.componentfactory.timeline.model.GroupItem;
 import com.vaadin.componentfactory.timeline.model.Item;
 import com.vaadin.componentfactory.timeline.model.SnapStep;
-import com.vaadin.external.apache.commons.fileupload2.MultipartStream.ItemInputStream;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
-import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -73,7 +61,7 @@ public class TripItineraryView  extends VerticalLayout{
 	ComboBox<ZJTProduct> legsCombo = new ComboBox<>("Legs");
 
 	//Leg Detail Panel
-	ComboBox<TripLegType> legTypeCombo = new ComboBox<>("Leg Type");
+	ComboBox<ZJETripLegType> legTypeCombo = new ComboBox<>("Leg Type");
 	TimePicker startTimePicker = new TimePicker("Start");
 	NumberField hourNum = new NumberField("Hours");
 	NumberField kmNum = new NumberField("KM");
@@ -115,7 +103,7 @@ public class TripItineraryView  extends VerticalLayout{
 		description.setWidthFull();
 		description.setHeight("15em");
 //		description.setValue("dafjhofdaoo0w4ehnkegfnl");
-		legTypeCombo.setItems(TripLegType.values());
+		legTypeCombo.setItems(ZJETripLegType.values());
 		add(getItineraryPanel(), getLegPanel(), getLegDetailPanel(), timeline, description);
 		updateList();
 //		closeEditor();
@@ -438,7 +426,7 @@ public class TripItineraryView  extends VerticalLayout{
 //		grid.asSingleSelect().clear();
 		//edit(new ZJTProduct());
 		ZJTProduct itinerary = new ZJTProduct();
-		itinerary.setTripType(TripType.TI);
+		itinerary.setTripType(ZJETripType.TI);
 		itinerary.setName(itiText.getValue());
 		service.save(itinerary);
 
@@ -496,11 +484,11 @@ public class TripItineraryView  extends VerticalLayout{
 		ZJTProduct parent = itiCombo.getValue();
 
 		ZJTProduct leg = new ZJTProduct();
-		leg.setTripType(TripType.LI);
+		leg.setTripType(ZJETripType.LI);
 		leg.setName(legText.getValue());
 		leg.setTripdayoffset(m_dayOffset);
 		leg.setTriptime(Timestamp.valueOf(m_lastEndDate));
-		leg.setTriplegtype(TripLegType.US);
+		leg.setTriplegtype(ZJETripLegType.US);
 		service.save(leg);
 
 		ZJTComponentLine line = new ZJTComponentLine();

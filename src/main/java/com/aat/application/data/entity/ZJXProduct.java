@@ -14,8 +14,8 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name="product")
-@NamedQuery(name="Product.findAll", query="SELECT p FROM Product p")
-public class Product  {
+@NamedQuery(name="Product.findAll", query="SELECT p FROM ZJXProduct p")
+public class ZJXProduct {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -33,7 +33,7 @@ public class Product  {
 	@Column(length=255)
 	private String remarks;
 
-	public Product() {
+	public ZJXProduct() {
 	}
 
 	public Integer getProductid() {

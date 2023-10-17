@@ -37,20 +37,20 @@ public class ZJTElement implements ZJTPo, ZJTEntity {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private Uom uom = Uom.E;
+    private ZJEUom ZJEUom = ZJEUom.E;
 
     @Enumerated(EnumType.STRING)
-    private ElementList elementlist = ElementList.DH;
+    private ZJEElementList elementlist = ZJEElementList.DH;
 
     public int getZjt_element_id() {
         return zjt_element_id;
     }
 
-    public ElementList getElementlist() {
+    public ZJEElementList getElementlist() {
         return elementlist;
     }
 
-    public void setElementlist(ElementList elementlist) {
+    public void setElementlist(ZJEElementList elementlist) {
         this.elementlist = elementlist;
     }
 
@@ -74,11 +74,11 @@ public class ZJTElement implements ZJTPo, ZJTEntity {
         this.pricingType = pricingType;
     }
 
-    public Uom getUom() {
-        return uom;
+    public ZJEUom getUom() {
+        return ZJEUom;
     }
 
-    public void setUom(Uom uom) {
-        this.uom = uom;
+    public void setUom(ZJEUom ZJEUom) {
+        this.ZJEUom = ZJEUom;
     }
 }

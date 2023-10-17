@@ -64,41 +64,41 @@ public class PricelistService {
         }
     }
 
-    public void updateTabulatedItems(List<PriceListRow> rows, ZJTPricelist pricelist) {
-        for (PriceListRow row :
+    public void updateTabulatedItems(List<ZJXPriceListRow> rows, ZJTPricelist pricelist) {
+        for (ZJXPriceListRow row :
                 rows) {
             this.updateTabulatedItem(row, pricelist);
         }
     }
 
-    public void updateTabulatedItem(PriceListRow row, ZJTPricelist pricelist) {
+    public void updateTabulatedItem(ZJXPriceListRow row, ZJTPricelist pricelist) {
         List<ZJTPriceListItem> items = itemRepository.findByPricelistIs(pricelist);
 
-        List<ZJTProduct> tcs = productRepository.findByTripTypeIs(TripType.TC);
+        List<ZJTProduct> tcs = productRepository.findByTripTypeIs(ZJETripType.TC);
 
         ZJTProduct product;
         ZJTPriceListItem item;
-        product = getProduct(tcs, row.getResourceType().getName(), ElementList.VK);
+        product = getProduct(tcs, row.getResourceType().getName(), ZJEElementList.VK);
         item = getItem(items, product, pricelist);
         updatePrice(item, row.getVehicleKM());
 
-        product = getProduct(tcs, row.getResourceType().getName(), ElementList.VH);
+        product = getProduct(tcs, row.getResourceType().getName(), ZJEElementList.VH);
         item = getItem(items, product, pricelist);
         updatePrice(item, row.getVehicleHours());
 
-        product = getProduct(tcs, row.getResourceType().getName(), ElementList.DH);
+        product = getProduct(tcs, row.getResourceType().getName(), ZJEElementList.DH);
         item = getItem(items, product, pricelist);
         updatePrice(item, row.getDriverHours());
 
-        product = getProduct(tcs, row.getResourceType().getName(), ElementList.PM);
+        product = getProduct(tcs, row.getResourceType().getName(), ZJEElementList.PM);
         item = getItem(items, product, pricelist);
         updatePrice(item, row.getProfitMargin());
 
-        product = getProduct(tcs, row.getResourceType().getName(), ElementList.OH);
+        product = getProduct(tcs, row.getResourceType().getName(), ZJEElementList.OH);
         item = getItem(items, product, pricelist);
         updatePrice(item, row.getOverHead());
 
-        product = getProduct(tcs, row.getName(), ElementList.AE);
+        product = getProduct(tcs, row.getName(), ZJEElementList.AE);
         item = getItem(items, product, pricelist);
         updatePrice(item, row.getOverHead());
 
@@ -109,36 +109,36 @@ public class PricelistService {
         itemRepository.save(item);
     }
 
-    public List<PriceListRow> getTabulatedItems(ZJTPricelist pricelist) {
-        List<ZJTProduct> tcs = productRepository.findByTripTypeIs(TripType.TC);
+    public List<ZJXPriceListRow> getTabulatedItems(ZJTPricelist pricelist) {
+        List<ZJTProduct> tcs = productRepository.findByTripTypeIs(ZJETripType.TC);
         List<ZJTPriceListItem> items = itemRepository.findByPricelistIs(pricelist);
         //Field[] fields = PriceListRow.class.getDeclaredFields();
 
-        List<PriceListRow> rows = new ArrayList<PriceListRow>();
+        List<ZJXPriceListRow> rows = new ArrayList<ZJXPriceListRow>();
 
         List<ZJTResourceType> rts = getResourceTypes();
         for (ZJTResourceType rt : rts) {
-            PriceListRow row = new PriceListRow(rt, pricelist);
+            ZJXPriceListRow row = new ZJXPriceListRow(rt, pricelist);
             ZJTProduct product;
             ZJTPriceListItem item;
 
-            product = getProduct(tcs, rt.getName(), ElementList.VK);
+            product = getProduct(tcs, rt.getName(), ZJEElementList.VK);
             item = getItem(items, product, pricelist);
             row.setVehicleKMItem(item);
 
-            product = getProduct(tcs, rt.getName(), ElementList.VH);
+            product = getProduct(tcs, rt.getName(), ZJEElementList.VH);
             item = getItem(items, product, pricelist);
             row.setVehicleHourItem(item);
 
-            product = getProduct(tcs, rt.getName(), ElementList.DH);
+            product = getProduct(tcs, rt.getName(), ZJEElementList.DH);
             item = getItem(items, product, pricelist);
             row.setDriverHourItem(item);
 
-            product = getProduct(tcs, rt.getName(), ElementList.PM);
+            product = getProduct(tcs, rt.getName(), ZJEElementList.PM);
             item = getItem(items, product, pricelist);
             row.setProfitMarginItem(item);
 
-            product = getProduct(tcs, rt.getName(), ElementList.OH);
+            product = getProduct(tcs, rt.getName(), ZJEElementList.OH);
             item = getItem(items, product, pricelist);
             row.setOverHeadItem(item);
 
@@ -154,10 +154,10 @@ public class PricelistService {
     }
 
     private ZJTProduct getProduct(List<ZJTProduct> tcs
-            , String resourceTypeName, ElementList elementList) {
+            , String resourceTypeName, ZJEElementList ZJEElementList) {
         ZJTProduct product = tcs.stream()
                 .filter(p -> p.getResourceType().getName().equals(resourceTypeName) &&
-                        p.getTripElement().getElementlist() == elementList).findFirst().orElse(null);
+                        p.getTripElement().getElementlist() == ZJEElementList).findFirst().orElse(null);
 
         return product;
     }
@@ -184,7 +184,7 @@ public class PricelistService {
         return item;
     }
 
-    public void persistTabulatedItems(List<PriceListRow> items) {
+    public void persistTabulatedItems(List<ZJXPriceListRow> items) {
 
     }
 }

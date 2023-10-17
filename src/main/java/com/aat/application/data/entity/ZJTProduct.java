@@ -43,7 +43,7 @@ public class ZJTProduct implements ZJTPo {
 
     @Enumerated(EnumType.STRING)
 	@NotNull
-	private TripType tripType;
+	private ZJETripType ZJETripType;
 
 	@Column(columnDefinition = "integer default 0")
 	private Integer tripdayoffset;
@@ -55,7 +55,7 @@ public class ZJTProduct implements ZJTPo {
 	private Timestamp triptime;
 	
 	@Column
-	private TripLegType triplegtype;
+	private ZJETripLegType triplegtype;
 	
 	@Column
 	private BigDecimal tripleghour;
@@ -106,12 +106,12 @@ public class ZJTProduct implements ZJTPo {
 		this.tripElement = tripElement;
 	}
 
-	public TripType getTripType() {
-		return tripType;
+	public ZJETripType getTripType() {
+		return ZJETripType;
 	}
 
-	public void setTripType(TripType tripType) {
-		this.tripType = tripType;
+	public void setTripType(ZJETripType ZJETripType) {
+		this.ZJETripType = ZJETripType;
 	}
 
 	public Integer getTripdayoffset() {
@@ -138,11 +138,11 @@ public class ZJTProduct implements ZJTPo {
 		this.triptime = triptime;
 	}
 
-	public TripLegType getTriplegtype() {
+	public ZJETripLegType getTriplegtype() {
 		return triplegtype;
 	}
 
-	public void setTriplegtype(TripLegType triplegtype) {
+	public void setTriplegtype(ZJETripLegType triplegtype) {
 		this.triplegtype = triplegtype;
 	}
 

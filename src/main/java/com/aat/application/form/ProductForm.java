@@ -2,7 +2,7 @@ package com.aat.application.form;
 
 import java.util.List;
 
-import com.aat.application.data.entity.TripType;
+import com.aat.application.data.entity.ZJETripType;
 import com.aat.application.data.entity.ZJTElement;
 import com.aat.application.data.entity.ZJTProduct;
 import com.aat.application.data.entity.ZJTResourceType;
@@ -26,7 +26,7 @@ public class ProductForm extends FormLayout {
 	TextField name = new TextField("Name");
 	TextField description = new TextField("Description");
 	ComboBox<ZJTResourceType> resourceType = new ComboBox<>("Resource Type");
-	ComboBox<TripType> tripType = new ComboBox<>("Trip Type");
+	ComboBox<ZJETripType> tripType = new ComboBox<>("Trip Type");
 	ComboBox<ZJTElement> tripElement = new ComboBox<>("Trip Element");
 	
 	Button save = new Button("Save");
@@ -37,7 +37,7 @@ public class ProductForm extends FormLayout {
 	{
 		addClassName("demo-app-form");
 		
-		tripType.setItems(TripType.values());
+		tripType.setItems(ZJETripType.values());
 		
 		resourceType.setItems(resourceTypes);
 		resourceType.setItemLabelGenerator(ZJTResourceType::getName);

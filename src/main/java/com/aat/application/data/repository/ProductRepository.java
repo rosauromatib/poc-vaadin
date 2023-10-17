@@ -5,9 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.aat.application.data.entity.Product;
-import com.aat.application.data.entity.TripType;
-import com.aat.application.data.entity.ZJTElement;
+import com.aat.application.data.entity.ZJETripType;
 import com.aat.application.data.entity.ZJTProduct;
 
 public interface ProductRepository extends JpaRepository<ZJTProduct, Integer>
@@ -15,9 +13,9 @@ public interface ProductRepository extends JpaRepository<ZJTProduct, Integer>
 	
 	List<ZJTProduct> findByNameContainingIgnoreCase(String name);
 	
-	List<ZJTProduct> findByTripTypeIs(TripType triptype);
+	List<ZJTProduct> findByTripTypeIs(ZJETripType triptype);
 	
-	List<ZJTProduct> findByNameContainingIgnoreCaseAndTripTypeIs(String name, TripType triptype);
+	List<ZJTProduct> findByNameContainingIgnoreCaseAndTripTypeIs(String name, ZJETripType triptype);
 	
 	@Query(value = 
 			"SELECT array_to_json(array_agg(row_to_json (r))) || '' FROM ( " + 

@@ -1,7 +1,5 @@
 package com.aat.application.views;
 
-import com.aat.application.data.entity.PriceListRow;
-import com.aat.application.data.entity.ZJTPricingType;
 import com.aat.application.data.entity.ZJTProduct;
 import com.aat.application.data.entity.ZJTResourceType;
 import com.aat.application.data.service.ProductService;
@@ -11,7 +9,6 @@ import com.vaadin.componentfactory.tuigrid.model.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -19,8 +16,6 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import javax.management.relation.Relation;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

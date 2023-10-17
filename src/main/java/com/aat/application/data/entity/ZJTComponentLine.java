@@ -35,7 +35,7 @@ public class ZJTComponentLine implements ZJTPo {
 	private ZJTElement tripelement;
 
 	@Enumerated(EnumType.STRING)
-	private Uom uom;
+	private ZJEUom ZJEUom;
 
 	@Column
 	private BigDecimal qty;
@@ -78,12 +78,12 @@ public class ZJTComponentLine implements ZJTPo {
 		this.tripelement = tripelement;
 	}
 
-	public Uom getUom() {
-		return uom;
+	public ZJEUom getUom() {
+		return ZJEUom;
 	}
 
-	public void setUom(Uom uom) {
-		this.uom = uom;
+	public void setUom(ZJEUom ZJEUom) {
+		this.ZJEUom = ZJEUom;
 	}
 
 	public BigDecimal getQty() {

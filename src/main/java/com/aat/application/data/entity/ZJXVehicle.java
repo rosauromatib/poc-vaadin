@@ -1,6 +1,6 @@
 package com.aat.application.data.entity;
 
-public class Vehicle {
+public class ZJXVehicle {
 	
 	String VIN;
 	String plateNo;

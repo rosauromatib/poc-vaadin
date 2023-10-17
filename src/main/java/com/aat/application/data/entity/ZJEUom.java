@@ -1,15 +1,18 @@
 package com.aat.application.data.entity;
 
 /**
+ * H - Hour
+ * K - KM
+ * E - Each
  * @author jtrinidad
  *
  */
-public enum TripLegType {
-	LR("Laden Running"), LS ("Laden Standing"), UR ("Unladen Running"), US("Unladen Standing"); 
+public enum ZJEUom {
+	H("Hour"), K ("KM"), E ("Each");
 	
     private final String name;
 
-    TripLegType(String name) {
+    ZJEUom(String name) {
         this.name = name;
     }
 

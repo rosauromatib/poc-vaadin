@@ -1,6 +1,6 @@
 package com.aat.application.views.vehicle;
 
-import com.aat.application.data.entity.Vehicle;
+import com.aat.application.data.entity.ZJXVehicle;
 import com.aat.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -11,7 +11,6 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 
 @PageTitle("Vehicle0")
 @Route(value = "vehicle0", layout = MainLayout.class)
@@ -22,7 +21,7 @@ public class Vehicle0View extends VerticalLayout {
 	private final NumberField numSeatingCapacity;
 	private final Button btnSave;
 	
-	private final Grid<Vehicle> grid = new Grid<>(Vehicle.class);
+	private final Grid<ZJXVehicle> grid = new Grid<>(ZJXVehicle.class);
 	
 	
     private TextField name;

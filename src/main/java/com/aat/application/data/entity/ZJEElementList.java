@@ -7,12 +7,12 @@ package com.aat.application.data.entity;
  * @author jtrinidad
  *
  */
-public enum ElementList {
+public enum ZJEElementList {
 	VH("Vehicle Hours"), OH("Over Head"), VK("Vehicle KM"), PM("Profit Margin"), DH("Driver Hours"), AE("A & E F");
 	
     private final String name;
 
-    ElementList(String name) {
+    ZJEElementList(String name) {
         this.name = name;
     }
 

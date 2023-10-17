@@ -8,9 +8,9 @@ import java.util.List;
 import com.aat.application.data.repository.BaseEntityRepository;
 import org.springframework.stereotype.Service;
 
-import com.aat.application.data.entity.ElementList;
-import com.aat.application.data.entity.PriceListRow;
-import com.aat.application.data.entity.TripType;
+import com.aat.application.data.entity.ZJEElementList;
+import com.aat.application.data.entity.ZJXPriceListRow;
+import com.aat.application.data.entity.ZJETripType;
 import com.aat.application.data.entity.ZJTPriceListItem;
 import com.aat.application.data.entity.ZJTPricelist;
 import com.aat.application.data.entity.ZJTProduct;
@@ -41,7 +41,7 @@ public class QuoteService {
 	
 	public List<ZJTProduct> findAllTripItineraries(String stringFilter)
 	{
-		return productRepository.findByTripTypeIs(TripType.TI);
+		return productRepository.findByTripTypeIs(ZJETripType.TI);
 	}
 
 	
@@ -83,39 +83,39 @@ public class QuoteService {
 		}
 	}
 
-	public List<PriceListRow> getTabulatedItems(ZJTPricelist pricelist)
+	public List<ZJXPriceListRow> getTabulatedItems(ZJTPricelist pricelist)
 	{
-		List<ZJTProduct> tcs = productRepository.findByTripTypeIs(TripType.TC);
+		List<ZJTProduct> tcs = productRepository.findByTripTypeIs(ZJETripType.TC);
 		List<ZJTPriceListItem> items = itemRepository.findByPricelistIs(pricelist);
 		
 		//Field[] fields = PriceListRow.class.getDeclaredFields();
 		
-		List<PriceListRow> rows = new ArrayList<PriceListRow>();
+		List<ZJXPriceListRow> rows = new ArrayList<ZJXPriceListRow>();
 		
 		List<ZJTResourceType> rts = getResourceTypes();	
 		for (ZJTResourceType rt : rts)
 		{
-			PriceListRow row = new PriceListRow(rt, pricelist);
+			ZJXPriceListRow row = new ZJXPriceListRow(rt, pricelist);
 			ZJTProduct product;
 			ZJTPriceListItem item;
 			
-			product = getProduct(tcs, rt.getName(), ElementList.VK);
+			product = getProduct(tcs, rt.getName(), ZJEElementList.VK);
 			item = getItem(items, product, pricelist);
 			row.setVehicleKMItem(item);
 
-			product = getProduct(tcs, rt.getName(), ElementList.VH);
+			product = getProduct(tcs, rt.getName(), ZJEElementList.VH);
 			item = getItem(items, product, pricelist);
 			row.setVehicleHourItem(item);
 
-			product = getProduct(tcs, rt.getName(), ElementList.DH);
+			product = getProduct(tcs, rt.getName(), ZJEElementList.DH);
 			item = getItem(items, product, pricelist);
 			row.setDriverHourItem(item);
 
-			product = getProduct(tcs, rt.getName(), ElementList.PM);
+			product = getProduct(tcs, rt.getName(), ZJEElementList.PM);
 			item = getItem(items, product, pricelist);
 			row.setProfitMarginItem(item);
 
-			product = getProduct(tcs, rt.getName(), ElementList.OH);
+			product = getProduct(tcs, rt.getName(), ZJEElementList.OH);
 			item = getItem(items, product, pricelist);
 			row.setOverHeadItem(item);
 
@@ -131,11 +131,11 @@ public class QuoteService {
 	}
 	
 	private ZJTProduct getProduct(List<ZJTProduct> tcs
-			, String resourceTypeName, ElementList elementList)
+			, String resourceTypeName, ZJEElementList ZJEElementList)
 	{
 		ZJTProduct product = tcs.stream()
 				.filter(p -> p.getResourceType().getName().equals(resourceTypeName) &&
-						p.getTripElement().getElementlist() == elementList).findFirst().orElse(null);
+						p.getTripElement().getElementlist() == ZJEElementList).findFirst().orElse(null);
 		
 		return product;
 	}
@@ -157,7 +157,7 @@ public class QuoteService {
 		return item;
 	}
 	
-	public void persistTabulatedItems(List<PriceListRow> items)
+	public void persistTabulatedItems(List<ZJXPriceListRow> items)
 	{
 		
 	}
