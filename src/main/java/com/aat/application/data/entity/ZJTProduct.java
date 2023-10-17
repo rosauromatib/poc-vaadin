@@ -43,7 +43,7 @@ public class ZJTProduct implements ZJTPo {
 
     @Enumerated(EnumType.STRING)
 	@NotNull
-	private ZJETripType ZJETripType;
+	private ZJETripType tripType;
 
 	@Column(columnDefinition = "integer default 0")
 	private Integer tripdayoffset;
@@ -107,11 +107,11 @@ public class ZJTProduct implements ZJTPo {
 	}
 
 	public ZJETripType getTripType() {
-		return ZJETripType;
+		return tripType;
 	}
 
 	public void setTripType(ZJETripType ZJETripType) {
-		this.ZJETripType = ZJETripType;
+		this.tripType = ZJETripType;
 	}
 
 	public Integer getTripdayoffset() {

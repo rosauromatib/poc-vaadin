@@ -59,14 +59,14 @@ public class PriceListView extends VerticalLayout {
             Collections.sort(listPricingType, comparator);
 
             List<String> headers = List.of("name", "vehicle_hours", "vehicle_km", "driver_hours", "over_head", "profit_margin");
-            for (ZJXPriceListRow ZJXPriceListRow :
+            for (ZJXPriceListRow priceListRow :
                     listPricingType) {
-                TableData.add(new GuiItem(List.of(ZJXPriceListRow.getName(),
-                        String.valueOf(ZJXPriceListRow.getVehicleHours()),
-                        String.valueOf(ZJXPriceListRow.getVehicleKM()),
-                        String.valueOf(ZJXPriceListRow.getDriverHours()),
-                        String.valueOf(ZJXPriceListRow.getOverHead()),
-                        String.valueOf(ZJXPriceListRow.getProfitMargin())),
+                TableData.add(new GuiItem(List.of(priceListRow.getName(),
+                        String.valueOf(priceListRow.getVehicleHours()),
+                        String.valueOf(priceListRow.getVehicleKM()),
+                        String.valueOf(priceListRow.getDriverHours()),
+                        String.valueOf(priceListRow.getOverHead()),
+                        String.valueOf(priceListRow.getProfitMargin())),
                         headers));
 
             }
@@ -255,15 +255,15 @@ public class PriceListView extends VerticalLayout {
         List<String> headers = List.of("name", "vehicle_hours", "vehicle_km", "driver_hours", "over_head", "profit_margin");
         List<ZJXPriceListRow> rows = service.getTabulatedItems(pricelistCombo.getValue());
 
-        for (ZJXPriceListRow ZJXPriceListRow :
+        for (ZJXPriceListRow priceListRow :
                 rows) {
 //            sp.add(String.valueOf(priceListRow.getName()+": "+ String.valueOf(priceListRow.getVehicleHours())));
-            items.add(new GuiItem(List.of(ZJXPriceListRow.getName(),
-                    ZJXPriceListRow.getVehicleHours() != null ? String.valueOf(ZJXPriceListRow.getVehicleHours()) :  String.valueOf(0),
-                    ZJXPriceListRow.getVehicleKM()!= null ? String.valueOf(ZJXPriceListRow.getVehicleKM()) : String.valueOf(0),
-                    ZJXPriceListRow.getDriverHours()!= null ? String.valueOf(ZJXPriceListRow.getDriverHours()) : String.valueOf(0),
-                    ZJXPriceListRow.getOverHead()!= null ? String.valueOf(ZJXPriceListRow.getOverHead()) : String.valueOf(0),
-                    ZJXPriceListRow.getProfitMargin()!= null ? String.valueOf(ZJXPriceListRow.getProfitMargin()) : String.valueOf(0)),
+            items.add(new GuiItem(List.of(priceListRow.getName(),
+                    priceListRow.getVehicleHours() != null ? String.valueOf(priceListRow.getVehicleHours()) :  String.valueOf(0),
+                    priceListRow.getVehicleKM()!= null ? String.valueOf(priceListRow.getVehicleKM()) : String.valueOf(0),
+                    priceListRow.getDriverHours()!= null ? String.valueOf(priceListRow.getDriverHours()) : String.valueOf(0),
+                    priceListRow.getOverHead()!= null ? String.valueOf(priceListRow.getOverHead()) : String.valueOf(0),
+                    priceListRow.getProfitMargin()!= null ? String.valueOf(priceListRow.getProfitMargin()) : String.valueOf(0)),
                     headers));
         }
         grid.setItems(items);

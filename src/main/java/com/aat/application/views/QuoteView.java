@@ -65,14 +65,14 @@ public class QuoteView extends VerticalLayout {
             Collections.sort(listPricingType, comparator);
 
             List<String> headers = List.of("name", "vehicle_hours", "vehicle_km", "driver_hours", "over_head", "profit_margin");
-            for (ZJXPriceListRow ZJXPriceListRow :
+            for (ZJXPriceListRow priceListRow :
                     listPricingType) {
-                TableData.add(new GuiItem(List.of(ZJXPriceListRow.getName(),
-                        String.valueOf(ZJXPriceListRow.getVehicleHours()),
-                        String.valueOf(ZJXPriceListRow.getVehicleKM()),
-                        String.valueOf(ZJXPriceListRow.getDriverHours()),
-                        String.valueOf(ZJXPriceListRow.getOverHead()),
-                        String.valueOf(ZJXPriceListRow.getProfitMargin())),
+                TableData.add(new GuiItem(List.of(priceListRow.getName(),
+                        String.valueOf(priceListRow.getVehicleHours()),
+                        String.valueOf(priceListRow.getVehicleKM()),
+                        String.valueOf(priceListRow.getDriverHours()),
+                        String.valueOf(priceListRow.getOverHead()),
+                        String.valueOf(priceListRow.getProfitMargin())),
                         headers));
 
             }
