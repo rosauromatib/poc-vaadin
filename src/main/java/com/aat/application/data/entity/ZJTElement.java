@@ -37,7 +37,7 @@ public class ZJTElement implements ZJTPo, ZJTEntity {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private ZJEUom ZJEUom = ZJEUom.E;
+    private ZJEUom uom = ZJEUom.E;
 
     @Enumerated(EnumType.STRING)
     private ZJEElementList elementlist = ZJEElementList.DH;
@@ -75,10 +75,10 @@ public class ZJTElement implements ZJTPo, ZJTEntity {
     }
 
     public ZJEUom getUom() {
-        return ZJEUom;
+        return uom;
     }
 
-    public void setUom(ZJEUom ZJEUom) {
-        this.ZJEUom = ZJEUom;
+    public void setUom(ZJEUom uom) {
+        this.uom = uom;
     }
 }
