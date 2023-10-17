@@ -95,14 +95,14 @@ public class MainLayout extends AppLayout {
         parent = new AppNavItem("Setup Data");
         parent.setIcon(LineAwesomeIcon.FOLDER.create());
         nav.addItem(parent);
-        parent.addItem(new AppNavItem("Pricing Type", CommonView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
-                .withParameter(CommonView.class, "entityClass", ZJTPricingType.class.getSimpleName()));
-        parent.addItem(new AppNavItem("Trip Element", CommonView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
-                .withParameter(CommonView.class, "entityClass", ZJTElement.class.getSimpleName()));
-        parent.addItem(new AppNavItem("Resource Category", CommonView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
-                .withParameter(CommonView.class, "entityClass", ZJTResourceCategory.class.getSimpleName()));
-        parent.addItem(new AppNavItem("Resource Type", CommonView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
-                .withParameter(CommonView.class, "entityClass", ZJTResourceType.class.getSimpleName()));
+        parent.addItem(new AppNavItem("Pricing Type", StandardFormView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
+                .withParameter(StandardFormView.class, "entityClass", ZJTPricingType.class.getSimpleName()));
+        parent.addItem(new AppNavItem("Trip Element", StandardFormView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
+                .withParameter(StandardFormView.class, "entityClass", ZJTElement.class.getSimpleName()));
+        parent.addItem(new AppNavItem("Resource Category", StandardFormView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
+                .withParameter(StandardFormView.class, "entityClass", ZJTResourceCategory.class.getSimpleName()));
+        parent.addItem(new AppNavItem("Resource Type", StandardFormView.class, LineAwesomeIcon.PRODUCT_HUNT.create())
+                .withParameter(StandardFormView.class, "entityClass", ZJTResourceType.class.getSimpleName()));
 //        nav.addItem(new AppNavItem("Vehicle List", VehicleView.class, LineAwesomeIcon.BABY_CARRIAGE_SOLID.create()));
 
         parent = new AppNavItem("UI Test");

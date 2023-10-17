@@ -12,7 +12,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 @Route(value = "commonview", layout = MainLayout.class)
-public class CommonView<T extends ZJTEntity> extends VerticalLayout implements RouterLayout, BeforeEnterObserver, HasDynamicTitle {
+public abstract class CommonView<T extends ZJTEntity> extends VerticalLayout implements RouterLayout, BeforeEnterObserver, HasDynamicTitle {
 
     protected CommonForm<T> form;
     protected final BaseEntityRepository<T> repository;
@@ -23,14 +23,6 @@ public class CommonView<T extends ZJTEntity> extends VerticalLayout implements R
         this.repository = repository;
     }
 
-    private void configureForm() {
-        if (form != null)
-            remove(form);
-
-        form = new CommonForm<>(entityClass, new BaseEntityService<>(repository));
-        form.setWidth("25em");
-        add(form);
-    }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -58,7 +50,6 @@ public class CommonView<T extends ZJTEntity> extends VerticalLayout implements R
             event.rerouteToError(NotFoundException.class);
         } else {
             repository.setEntityClass(entityClass);
-            configureForm();
         }
     }
 
