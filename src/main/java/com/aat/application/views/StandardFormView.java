@@ -2,20 +2,19 @@ package com.aat.application.views;
 
 import com.aat.application.core.ZJTEntity;
 import com.aat.application.data.repository.BaseEntityRepository;
+import com.aat.application.data.repository.StandardFormRepository;
 import com.aat.application.data.service.BaseEntityService;
 import com.aat.application.form.CommonForm;
-import com.aat.application.util.GlobalData;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.Route;
 
+@Route(value = "commonview", layout = MainLayout.class)
 public class StandardFormView<T extends ZJTEntity> extends CommonView<T> {
 
     protected CommonForm<T> form;
     protected final BaseEntityRepository<T> repository;
 
-    public StandardFormView(BaseEntityRepository<T> repository) {
+    public StandardFormView(StandardFormRepository<T> repository) {
         super(repository);
         this.repository = repository;
     }
@@ -32,8 +31,9 @@ public class StandardFormView<T extends ZJTEntity> extends CommonView<T> {
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         super.beforeEnter(event);
-        if (entityClass != null)
+        if (entityClass != null) {
             configureForm();
+        }
     }
 
 }
